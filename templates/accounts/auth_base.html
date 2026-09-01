@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="color-scheme" content="light">
+  <title>{% block title %}Sign in{% endblock %} · SportsAcademy ERP</title>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
+</head>
+<body class="auth-body">
+  <main class="auth-shell">
+    <div class="auth-card">
+      <div class="auth-brand">
+        <span class="auth-logo">🏆</span>
+        <div>
+          <div class="auth-brand-name">SportsAcademy <b>ERP</b></div>
+          <div class="auth-brand-sub">Multi-Sport Coaching Platform</div>
+        </div>
+      </div>
+
+      {% if messages %}
+        <div class="messages">
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% block auth_content %}{% endblock %}
+    </div>
+    <p class="auth-foot">Secured with one-time email codes · No passwords to steal</p>
+  </main>
+</body>
+</html>

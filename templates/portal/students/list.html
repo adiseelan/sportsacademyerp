@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Students{% endblock %}
+{% block topbar %}Students{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Students</h1>
+  <a class="btn btn-primary" href="{% url 'portal:student_create' %}">+ Add student</a>
+</div>
+
+<form method="get" class="chip-row" style="margin-bottom:1rem">
+  <input type="search" name="q" value="{{ q }}" placeholder="Search by name…" style="max-width:320px">
+  <button class="btn btn-sm" type="submit">Search</button>
+</form>
+
+<div class="table-wrap">
+  <table class="data">
+    <thead><tr><th>Name</th><th>Age</th><th>Sports / batches</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    {% for s in students %}
+      <tr>
+        <td><a href="{% url 'portal:student_detail' s.pk %}"><b>{{ s.full_name }}</b></a></td>
+        <td>{{ s.age|default:'—' }}</td>
+        <td class="small">{% for e in s.enrollments.all %}<span class="badge indigo">{{ e.sport.name }}</span> {% empty %}<span class="muted">not enrolled</span>{% endfor %}</td>
+        <td>{% if s.status == 'ACTIVE' %}<span class="badge green">Active</span>{% elif s.status == 'WITHDRAWN' %}<span class="badge red">Withdrawn</span>{% else %}<span class="badge gray">Inactive</span>{% endif %}</td>
+        <td><a class="btn btn-sm" href="{% url 'portal:student_detail' s.pk %}">Open</a></td>
+      </tr>
+    {% empty %}<tr><td colspan="5" class="empty"><div class="empty-ico">🧑‍🎓</div><p>No students found.</p></td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}{{ student.full_name }}{% endblock %}
+{% block topbar %}Student{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{{ student.full_name }}</h1>
+    <div class="sub">
+      {% if student.status == 'ACTIVE' %}<span class="badge green">Active</span>{% else %}<span class="badge gray">{{ student.get_status_display }}</span>{% endif %}
+      {% if student.age %}· {{ student.age }} yrs{% endif %}
+      {% if student.contact_phone %}· 📞 {{ student.contact_phone }}{% endif %}
+    </div>
+  </div>
+  <a class="btn btn-ghost" href="{% url 'portal:student_list' %}">← All students</a>
+</div>
+
+<div class="grid cols-2">
+  <div class="card">
+    <div class="card-head"><h3>Enrollments</h3></div>
+    <div class="card-body">
+      <div class="table-wrap"><table class="data" style="min-width:auto">
+        <thead><tr><th>Sport</th><th>Batch</th><th>Branch</th><th>Status</th></tr></thead>
+        <tbody>
+        {% for e in enrollments %}
+          <tr><td>{{ e.sport.name }}</td><td class="small">{{ e.batch.name }}</td><td class="small muted">{{ e.branch.name }}</td>
+            <td>{% if e.status == 'ACTIVE' %}<span class="badge green">Active</span>{% else %}<span class="badge gray">{{ e.get_status_display }}</span>{% endif %}</td></tr>
+        {% empty %}<tr><td colspan="4" class="muted small">Not enrolled in any batch.</td></tr>{% endfor %}
+        </tbody>
+      </table></div>
+      {% if can_manage %}
+      <form method="post" action="{% url 'portal:student_enroll' student.pk %}" class="chip-row" style="margin-top:.8rem">
+        {% csrf_token %}
+        {{ enroll_form.batch }}
+        <button class="btn btn-sm btn-primary" type="submit">Enroll</button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h3>Guardians</h3></div>
+    <div class="card-body">
+      {% for g in guardians %}
+        <div class="chip-row" style="justify-content:space-between;padding:.35rem 0;border-bottom:1px solid var(--border)">
+          <span>{{ g.parent.full_name }} <span class="small muted">· {{ g.get_relationship_display }}{% if g.is_primary %} · primary{% endif %}</span></span>
+          <span class="small muted">{{ g.parent.email }}</span>
+        </div>
+      {% empty %}<p class="muted small">No guardian linked.</p>{% endfor %}
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:1rem">
+  <div class="card-head"><h3>Fee plans</h3></div>
+  <div class="card-body">
+    <div class="table-wrap"><table class="data" style="min-width:auto">
+      <thead><tr><th>Sport</th><th>Plan</th><th>Type</th><th>Validity</th><th>Next due</th><th>Status</th></tr></thead>
+      <tbody>
+      {% for f in fees %}
+        <tr><td>{{ f.sport.name }}</td><td>{{ f.plan.name }}</td><td class="small">{{ f.plan.get_plan_type_display }}</td>
+          <td class="small">{% if f.end_date %}till {{ f.end_date|date:'d M Y' }}{% else %}open{% endif %}</td>
+          <td class="small">{{ f.next_due_date|date:'d M Y'|default:'—' }}</td>
+          <td>{% if f.status == 'ACTIVE' %}<span class="badge green">Active</span>{% else %}<span class="badge gray">{{ f.get_status_display }}</span>{% endif %}</td></tr>
+      {% empty %}<tr><td colspan="6" class="muted small">No fee plan assigned.</td></tr>{% endfor %}
+      </tbody>
+    </table></div>
+    {% if can_manage %}
+    <form method="post" action="{% url 'portal:student_assign_fee' student.pk %}" class="form-grid" style="margin-top:.9rem;grid-template-columns:1fr 1fr 1fr auto;align-items:end">
+      {% csrf_token %}
+      <label class="field"><span class="field-label">Sport</span>{{ fee_form.sport }}</label>
+      <label class="field"><span class="field-label">Plan</span>{{ fee_form.plan }}</label>
+      <label class="field"><span class="field-label">Start</span>{{ fee_form.start_date }}</label>
+      <button class="btn btn-primary" type="submit" style="margin-bottom:.9rem">Assign fee</button>
+    </form>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card" style="margin-top:1rem">
+  <div class="card-head"><h3>Invoices &amp; payments</h3></div>
+  <div class="card-body">
+    <div class="table-wrap"><table class="data">
+      <thead><tr><th>Invoice</th><th>Sport</th><th>Period</th><th>Payable</th><th>Paid</th><th>Balance</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+      {% for i in invoices %}
+        <tr><td class="small">{{ i.number }}</td><td class="small">{{ i.sport.name }}</td><td class="small">{{ i.period_label }}</td>
+          <td>₹{{ i.net_payable|floatformat:0|intcomma }}</td>
+          <td>₹{{ i.amount_paid|floatformat:0|intcomma }}</td>
+          <td>₹{{ i.balance|floatformat:0|intcomma }}</td>
+          <td>{% include 'portal/fees/_status_badge.html' with status=i.status label=i.get_status_display %}</td>
+          <td><a class="btn btn-sm" href="{% url 'portal:invoice_detail' i.pk %}">View</a></td></tr>
+      {% empty %}<tr><td colspan="8" class="muted small">No invoices yet.</td></tr>{% endfor %}
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:1rem">
+  <div class="card-head"><h3>Recent attendance</h3></div>
+  <div class="card-body">
+    <div class="chip-row">
+      {% for a in attendance %}
+        <span class="badge {% if a.status == 'PRESENT' %}green{% elif a.status == 'LATE' %}amber{% else %}red{% endif %}">
+          {{ a.session.date|date:'d M' }} · {{ a.get_status_display }}</span>
+      {% empty %}<span class="muted small">No attendance records.</span>{% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

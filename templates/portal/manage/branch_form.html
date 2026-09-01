@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}{% if mode == 'edit' %}Edit{% else %}New{% endif %} Branch{% endblock %}
+{% block topbar %}{% if mode == 'edit' %}Edit Branch{% else %}New Branch{% endif %}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>{% if mode == 'edit' %}Edit branch{% else %}New branch{% endif %}</h1>
+  <a class="btn btn-ghost" href="{% url 'portal:branches' %}">← Back to branches</a>
+</div>
+
+<form method="post" class="card card-pad" style="max-width:740px">
+  {% csrf_token %}
+  {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+
+  <div class="form-grid">
+    {% include 'portal/manage/_field.html' with field=form.name %}
+    {% include 'portal/manage/_field.html' with field=form.code %}
+  </div>
+  {% include 'portal/manage/_field.html' with field=form.address %}
+  <div class="form-grid">
+    {% include 'portal/manage/_field.html' with field=form.latitude %}
+    {% include 'portal/manage/_field.html' with field=form.longitude %}
+    {% include 'portal/manage/_field.html' with field=form.geofence_radius_m %}
+    {% include 'portal/manage/_field.html' with field=form.phone %}
+  </div>
+
+  <div class="field">
+    <span class="field-label">Sports offered</span>
+    <div class="checks">{{ form.sports }}</div>
+    {% if not form.sports.field.queryset %}<span class="small muted">No sports yet — <a href="{% url 'portal:sport_create' %}">add a sport</a> first.</span>{% endif %}
+  </div>
+
+  <label class="check-inline">{{ form.is_active }} <span>Active</span></label>
+
+  <div class="btn-row" style="margin-top:1rem">
+    <button class="btn btn-primary" type="submit">Save branch</button>
+    <a class="btn btn-ghost" href="{% url 'portal:branches' %}">Cancel</a>
+  </div>
+</form>
+<p class="small muted" style="max-width:740px;margin-top:.7rem">
+  Geo-coordinates + radius enable geo-fenced coach check-in. Leave blank to allow manual check-in only.
+</p>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}{{ student.full_name }} — Attendance{% endblock %}
+{% block topbar %}Attendance{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>{{ student.full_name }}</h1><div class="sub">Attendance history</div></div>
+  <a class="btn btn-ghost" href="{% url 'portal:parent_home' %}">← Back</a>
+</div>
+<div class="table-wrap">
+  <table class="data">
+    <thead><tr><th>Date</th><th>Sport</th><th>Batch</th><th>Status</th></tr></thead>
+    <tbody>
+    {% for a in records %}
+      <tr><td class="small nowrap">{{ a.session.date|date:'d M Y' }}</td>
+        <td class="small">{{ a.session.batch.sport.name }}</td>
+        <td class="small">{{ a.session.batch.name }}</td>
+        <td><span class="badge {% if a.status == 'PRESENT' %}green{% elif a.status == 'LATE' %}amber{% else %}red{% endif %}">{{ a.get_status_display }}</span></td></tr>
+    {% empty %}<tr><td colspan="4" class="empty"><div class="empty-ico">📅</div><p>No attendance records yet.</p></td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

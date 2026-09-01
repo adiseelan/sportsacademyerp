@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Batches{% endblock %}
+{% block topbar %}Batches{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Batches</h1>
+  <a class="btn btn-primary" href="{% url 'portal:batch_create' %}">+ New batch</a>
+</div>
+<div class="table-wrap">
+  <table class="data">
+    <thead><tr><th>Sport</th><th>Batch</th><th>Branch</th><th>Schedule</th><th>Coaches</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    {% for b in batches %}
+      <tr>
+        <td>{{ b.sport.name }}</td>
+        <td><b>{{ b.name }}</b></td>
+        <td class="small muted">{{ b.branch.name }}</td>
+        <td class="small">{{ b.schedule_label }}</td>
+        <td class="small">{% for c in b.coaches.all %}{{ c.get_short_name }}{% if not forloop.last %}, {% endif %}{% empty %}<span class="muted">—</span>{% endfor %}</td>
+        <td>{% if b.is_active %}<span class="badge green">Active</span>{% else %}<span class="badge gray">Inactive</span>{% endif %}</td>
+        <td><a class="btn btn-sm" href="{% url 'portal:batch_edit' b.pk %}">Edit</a></td>
+      </tr>
+    {% empty %}<tr><td colspan="7" class="empty"><div class="empty-ico">📋</div><p>No batches yet. Create one to start enrolling students.</p></td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

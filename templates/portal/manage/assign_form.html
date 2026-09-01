@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Assign — {{ person.full_name }}{% endblock %}
+{% block topbar %}Assignments{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>{{ assign_label }}</h1>
+  <a class="btn btn-ghost" href="{% if field == 'batches' %}{% url 'portal:coaches' %}{% else %}{% url 'portal:managers' %}{% endif %}">← Back</a>
+</div>
+<form method="post" class="card card-pad" style="max-width:640px">
+  {% csrf_token %}
+  <p class="muted">{{ person.full_name }} <span class="small">· {{ person.email }}</span></p>
+  <div class="divider"></div>
+  <div class="checks">
+    {% if field == 'branches' %}{{ aform.branches }}{% else %}{{ aform.batches }}{% endif %}
+  </div>
+  <div class="btn-row" style="margin-top:1rem">
+    <button class="btn btn-primary" type="submit">Save assignments</button>
+    <a class="btn btn-ghost" href="{% if field == 'batches' %}{% url 'portal:coaches' %}{% else %}{% url 'portal:managers' %}{% endif %}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

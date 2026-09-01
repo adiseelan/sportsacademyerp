@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Reports{% endblock %}
+{% block topbar %}Reports{% endblock %}
+{% block content %}
+<div class="page-head"><h1>Exportable reports</h1>
+  <div class="sub">Scoped to your access. Opens as CSV (Excel / Sheets ready).</div></div>
+<div class="grid cols-2">
+  <a class="card card-pad" href="{% url 'portal:export_revenue' %}" style="text-decoration:none;color:inherit">
+    <h3>💰 Revenue</h3><p class="small muted">Every payment received — student, sport, branch, method, amount.</p>
+    <span class="btn btn-sm btn-primary">Download CSV</span></a>
+  <a class="card card-pad" href="{% url 'portal:export_outstanding' %}" style="text-decoration:none;color:inherit">
+    <h3>⏳ Outstanding fees</h3><p class="small muted">All due / partial / overdue invoices with balances.</p>
+    <span class="btn btn-sm btn-primary">Download CSV</span></a>
+  <a class="card card-pad" href="{% url 'portal:export_attendance' %}" style="text-decoration:none;color:inherit">
+    <h3>📅 Attendance summary</h3><p class="small muted">Per-student attendance across batches and dates.</p>
+    <span class="btn btn-sm btn-primary">Download CSV</span></a>
+  <a class="card card-pad" href="{% url 'portal:export_coach_activity' %}" style="text-decoration:none;color:inherit">
+    <h3>🧑‍🏫 Coach activity</h3><p class="small muted">Sessions conducted, check-in type, punctuality, present counts.</p>
+    <span class="btn btn-sm btn-primary">Download CSV</span></a>
+</div>
+{% endblock %}

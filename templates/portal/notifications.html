@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Notifications{% endblock %}
+{% block topbar %}Notifications{% endblock %}
+{% block content %}
+<div class="page-head"><h1>Notifications</h1>
+  <form method="post" action="{% url 'portal:notifications_read_all' %}">{% csrf_token %}
+    <button class="btn btn-sm" type="submit">Mark all read</button></form></div>
+
+<div class="card">
+  <div class="card-body">
+    {% for n in notes %}
+      <div class="chip-row" style="justify-content:space-between;align-items:flex-start;padding:.7rem 0;border-bottom:1px solid var(--border);{% if not n.is_read %}font-weight:600{% endif %}">
+        <div style="min-width:0">
+          <div>{% if not n.is_read %}<span class="dot live" style="background:var(--primary)"></span>{% endif %}{{ n.title }}</div>
+          <div class="small muted" style="font-weight:400">{{ n.body }}</div>
+          <div class="small muted" style="font-weight:400">{{ n.created_at|date:'d M Y, H:i' }}</div>
+        </div>
+        {% if n.url %}
+        <form method="post" action="{% url 'portal:notification_read' n.pk %}">{% csrf_token %}
+          <button class="btn btn-sm btn-ghost" type="submit">Open →</button></form>
+        {% elif not n.is_read %}
+        <form method="post" action="{% url 'portal:notification_read' n.pk %}">{% csrf_token %}
+          <button class="btn btn-sm btn-ghost" type="submit">✓</button></form>
+        {% endif %}
+      </div>
+    {% empty %}<div class="empty"><div class="empty-ico">🔔</div><p>No notifications.</p></div>{% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}{{ invoice.number }}{% endblock %}
+{% block topbar %}Invoice{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{{ invoice.number }}</h1>
+    <div class="sub">{{ invoice.student.full_name }} · {{ invoice.sport.name }} · {{ invoice.period_label }}</div>
+  </div>
+  {% include 'portal/fees/_status_badge.html' with status=invoice.status label=invoice.get_status_display %}
+</div>
+
+<div class="grid cols-4" style="margin-bottom:1rem">
+  <div class="kpi"><div class="kpi-label">Amount</div><div class="kpi-value">₹{{ invoice.amount|floatformat:0|intcomma }}</div></div>
+  <div class="kpi"><div class="kpi-label">Discount</div><div class="kpi-value">₹{{ invoice.discount|floatformat:0|intcomma }}</div></div>
+  <div class="kpi accent"><div class="kpi-label">Paid</div><div class="kpi-value">₹{{ invoice.amount_paid|floatformat:0|intcomma }}</div></div>
+  <div class="kpi {% if invoice.balance > 0 %}danger{% else %}accent{% endif %}"><div class="kpi-label">Balance</div><div class="kpi-value">₹{{ invoice.balance|floatformat:0|intcomma }}</div><div class="kpi-sub">due {{ invoice.due_date|date:'d M Y' }}</div></div>
+</div>
+
+<div class="grid cols-2">
+  <div class="card">
+    <div class="card-head"><h3>Payment ledger</h3></div>
+    <div class="card-body">
+      <div class="table-wrap"><table class="data" style="min-width:auto">
+        <thead><tr><th>Date</th><th>Receipt</th><th>Method</th><th>Amount</th></tr></thead>
+        <tbody>
+        {% for p in payments %}
+          <tr><td class="small">{{ p.recorded_at|date:'d M H:i' }}</td>
+            <td class="small"><a href="{% url 'portal:receipt' p.pk %}">{{ p.receipt_number|default:'—' }}</a></td>
+            <td class="small">{{ p.get_method_display }}{% if p.kind == 'REFUND' %} <span class="badge red">refund</span>{% endif %}</td>
+            <td>₹{{ p.amount|floatformat:0|intcomma }}</td></tr>
+        {% empty %}<tr><td colspan="4" class="muted small">No payments recorded.</td></tr>{% endfor %}
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h3>Actions</h3></div>
+    <div class="card-body">
+      {% if can_pay_online %}
+        <a class="btn btn-accent btn-block" href="{% url 'portal:pay_online' invoice.pk %}">💳 Pay ₹{{ invoice.balance|floatformat:0|intcomma }} online</a>
+        <div class="divider"></div>
+      {% endif %}
+
+      {% if can_record %}
+        <form method="post" action="{% url 'portal:record_payment' invoice.pk %}">
+          {% csrf_token %}
+          <label class="field"><span class="field-label">Record offline payment</span>{{ pay_form.amount }}</label>
+          <div class="form-grid">
+            <label class="field"><span class="field-label">Method</span>{{ pay_form.method }}</label>
+            <label class="field"><span class="field-label">Note</span>{{ pay_form.note }}</label>
+          </div>
+          <button class="btn btn-primary btn-block" type="submit">Record payment</button>
+        </form>
+        <div class="divider"></div>
+        <div class="btn-row">
+          <form method="post" action="{% url 'portal:send_reminder' invoice.pk %}">{% csrf_token %}
+            <button class="btn btn-sm" type="submit">🔔 Send reminder</button></form>
+          {% if can_waive %}
+          <form method="post" action="{% url 'portal:waive_invoice' invoice.pk %}">{% csrf_token %}
+            <input type="hidden" name="reason" value="Waived by admin">
+            <button class="btn btn-sm btn-ghost" type="submit">Waive invoice</button></form>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if not can_record and not can_pay_online %}
+        <p class="muted small">This invoice is settled or view-only for your role.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

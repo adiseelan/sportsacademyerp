@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Receipt {{ p.receipt_number }}{% endblock %}
+{% block topbar %}Receipt{% endblock %}
+{% block content %}
+<div class="page-head no-print">
+  <h1>Receipt</h1>
+  <div class="btn-row">
+    <button class="btn" onclick="window.print()" type="button">🖨️ Print / Save PDF</button>
+    {% if invoice %}<a class="btn btn-ghost" href="{% url 'portal:invoice_detail' invoice.pk %}">← Invoice</a>{% endif %}
+  </div>
+</div>
+
+<div class="card card-pad" style="max-width:620px;margin:0 auto">
+  <div class="chip-row" style="justify-content:space-between;align-items:flex-start">
+    <div>
+      <div style="font-size:1.6rem">🏆</div>
+      <h2 style="margin:.2rem 0">{{ p.academy.name }}</h2>
+      <p class="small muted" style="margin:0">Official payment receipt</p>
+    </div>
+    <div class="right">
+      <div class="badge green">PAID</div>
+      <p class="small muted" style="margin:.3rem 0 0">{{ p.receipt_number }}</p>
+      <p class="small muted" style="margin:0">{{ p.recorded_at|date:'d M Y, H:i' }}</p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <dl class="kv">
+    <dt>Received from</dt><dd>{{ p.student.full_name }}</dd>
+    {% if invoice %}<dt>Towards</dt><dd>{{ invoice.sport.name }} — {{ invoice.period_label }} ({{ invoice.number }})</dd>{% endif %}
+    <dt>Method</dt><dd>{{ p.get_method_display }}{% if p.gateway_ref %} · ref {{ p.gateway_ref }}{% endif %}</dd>
+    <dt>Recorded by</dt><dd>{{ p.recorded_by.get_short_name|default:'Online gateway' }}</dd>
+  </dl>
+
+  <div class="divider"></div>
+  <div class="chip-row" style="justify-content:space-between">
+    <h3 style="margin:0">Amount paid</h3>
+    <h2 style="margin:0">₹{{ p.amount|floatformat:2|intcomma }}</h2>
+  </div>
+  {% if invoice %}
+  <p class="small muted right" style="margin-top:.3rem">Invoice balance now: ₹{{ invoice.balance|floatformat:2|intcomma }}</p>
+  {% endif %}
+
+  <div class="divider"></div>
+  <p class="small muted center">This is a computer-generated receipt and does not require a signature.</p>
+</div>
+{% endblock %}

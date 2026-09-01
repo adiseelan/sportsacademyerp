@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Add {{ role }}{% endblock %}
+{% block topbar %}Add {{ role }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Add {{ role|lower }}</h1>
+  <a class="btn btn-ghost" href="{% if role == 'Coach' %}{% url 'portal:coaches' %}{% else %}{% url 'portal:managers' %}{% endif %}">← Back</a>
+</div>
+<form method="post" class="card card-pad" style="max-width:640px">
+  {% csrf_token %}
+  <h3>{{ role }} details</h3>
+  <div class="form-grid">
+    {% include 'portal/manage/_field.html' with field=sform.full_name %}
+    {% include 'portal/manage/_field.html' with field=sform.email %}
+  </div>
+  {% include 'portal/manage/_field.html' with field=sform.phone %}
+  <p class="small muted">They sign in at the login page with a one-time code sent to this email — no password needed.</p>
+
+  <div class="divider"></div>
+  <h3>{{ assign_label }}</h3>
+  {% if aform.branches %}
+    <div class="checks">{{ aform.branches }}</div>
+  {% else %}
+    <div class="checks">{{ aform.batches }}</div>
+  {% endif %}
+
+  <div class="btn-row" style="margin-top:1rem">
+    <button class="btn btn-primary" type="submit">Create {{ role|lower }}</button>
+    <a class="btn btn-ghost" href="{% if role == 'Coach' %}{% url 'portal:coaches' %}{% else %}{% url 'portal:managers' %}{% endif %}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

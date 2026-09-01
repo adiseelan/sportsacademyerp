@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Fees{% endblock %}
+{% block topbar %}Fees &amp; Payments{% endblock %}
+{% block content %}
+<div class="page-head"><h1>Fees &amp; payments</h1></div>
+<div class="table-wrap">
+  <table class="data">
+    <thead><tr><th>Child</th><th>Sport</th><th>Period</th><th>Balance</th><th>Due</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    {% for i in invoices %}
+      <tr>
+        <td>{{ i.student.full_name }}</td>
+        <td class="small">{{ i.sport.name }}</td>
+        <td class="small">{{ i.period_label }}</td>
+        <td><b>₹{{ i.balance|floatformat:0|intcomma }}</b></td>
+        <td class="small">{{ i.due_date|date:'d M' }}</td>
+        <td>{% include 'portal/fees/_status_badge.html' with status=i.status label=i.get_status_display %}</td>
+        <td>
+          {% if i.balance > 0 %}<a class="btn btn-sm btn-accent" href="{% url 'portal:pay_online' i.pk %}">Pay</a>
+          {% else %}<a class="btn btn-sm" href="{% url 'portal:invoice_detail' i.pk %}">View</a>{% endif %}
+        </td>
+      </tr>
+    {% empty %}<tr><td colspan="7" class="empty"><div class="empty-ico">💳</div><p>No invoices yet.</p></td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

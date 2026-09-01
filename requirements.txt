@@ -1,0 +1,7 @@
+# Core runtime — enough to run the app (SQLite, dev/test, PythonAnywhere).
+Django>=5.0,<5.2
+argon2-cffi>=23.1.0        # Argon2 password hashing (preferred hasher)
+python-dotenv>=1.0.0       # .env loading
+
+# For a full production deploy (Postgres + gunicorn + WhiteNoise), also:
+#   pip install -r requirements-prod.txt

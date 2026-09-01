@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Session History{% endblock %}
+{% block topbar %}Session History{% endblock %}
+{% block content %}
+<div class="page-head"><h1>My sessions</h1></div>
+<div class="table-wrap">
+  <table class="data">
+    <thead><tr><th>Date</th><th>Batch</th><th>Venue</th><th>Check-in</th><th>Duration</th><th>Present</th><th>Status</th></tr></thead>
+    <tbody>
+    {% for s in sessions %}
+      <tr>
+        <td class="small nowrap">{{ s.date|date:'d M Y' }}</td>
+        <td class="small">{{ s.batch.sport.name }} · {{ s.batch.name }}</td>
+        <td class="small muted">{{ s.batch.branch.name }}</td>
+        <td class="small">{% if s.check_in_method == 'GEO' %}<span class="badge green">Geo</span>{% elif s.check_in_method == 'MANUAL' %}<span class="badge amber">Manual</span>{% else %}—{% endif %}</td>
+        <td class="small">{% if s.duration_minutes %}{{ s.duration_minutes }} min{% else %}—{% endif %}</td>
+        <td class="small">{{ s.records.all|length }}</td>
+        <td>{% if s.status == 'COMPLETED' %}<span class="badge gray">Completed</span>{% elif s.status == 'LIVE' %}<span class="badge green">Live</span>{% else %}<span class="badge amber">{{ s.get_status_display }}</span>{% endif %}</td>
+      </tr>
+    {% empty %}<tr><td colspan="7" class="empty"><div class="empty-ico">🗂️</div><p>No sessions yet.</p></td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

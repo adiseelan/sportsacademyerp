@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Branches{% endblock %}
+{% block topbar %}Branches{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Branches &amp; venues</h1>
+  <div class="btn-row">
+    <a class="btn btn-ghost" href="{% url 'portal:sport_create' %}">+ Sport</a>
+    <a class="btn btn-ghost" href="{% url 'portal:batch_list' %}">📋 Batches</a>
+    <a class="btn btn-primary" href="{% url 'portal:branch_create' %}">+ New branch</a>
+  </div>
+</div>
+<div class="grid cols-2">
+  {% for b in branches %}
+    <div class="card card-pad">
+      <div class="chip-row" style="justify-content:space-between">
+        <h3 style="margin:0">🏢 {{ b.name }}</h3>
+        {% if b.is_active %}<span class="badge green">Active</span>{% else %}<span class="badge gray">Inactive</span>{% endif %}
+      </div>
+      <p class="small muted" style="margin:.3rem 0">{{ b.address|default:'No address on file' }}</p>
+      <dl class="kv">
+        <dt>Geo-fence</dt><dd>{% if b.has_geo %}{{ b.latitude|floatformat:4 }}, {{ b.longitude|floatformat:4 }} · {{ b.geofence_radius_m }} m{% else %}Not set{% endif %}</dd>
+        <dt>Sports</dt><dd>{% for s in b.sports.all %}<span class="badge indigo">{{ s.name }}</span> {% empty %}—{% endfor %}</dd>
+        <dt>Managers</dt><dd>{% for m in b.managers.all %}{{ m.get_short_name }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}</dd>
+      </dl>
+      <div class="btn-row" style="margin-top:.6rem">
+        <a class="btn btn-sm" href="{% url 'portal:branch_edit' b.pk %}">Edit</a>
+      </div>
+    </div>
+  {% empty %}
+    <div class="empty" style="grid-column:1/-1"><div class="empty-ico">🏢</div>
+      <p>No branches yet.</p>
+      <a class="btn btn-primary" href="{% url 'portal:branch_create' %}">+ Create your first branch</a>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

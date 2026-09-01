@@ -1,0 +1,5 @@
+{% if status == 'PAID' %}<span class="badge green">{{ label }}</span>
+{% elif status == 'OVERDUE' %}<span class="badge red">{{ label }}</span>
+{% elif status == 'PARTIAL' %}<span class="badge blue">{{ label }}</span>
+{% elif status == 'DUE' %}<span class="badge amber">{{ label }}</span>
+{% else %}<span class="badge gray">{{ label }}</span>{% endif %}

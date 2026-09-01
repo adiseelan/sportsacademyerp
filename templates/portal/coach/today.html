@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Today{% endblock %}
+{% block topbar %}Today's Sessions{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>Today</h1><div class="sub">{{ today|date:'l, d M Y' }}</div></div>
+</div>
+
+{% if live %}
+  <div class="card card-pad" style="border-left:4px solid var(--accent);margin-bottom:1rem">
+    <div class="chip-row" style="justify-content:space-between">
+      <span><span class="dot live"></span><b>Live now</b></span>
+    </div>
+    {% for s in live %}
+      <div class="chip-row" style="justify-content:space-between;margin-top:.5rem">
+        <span>{{ s.batch }}</span>
+        <a class="btn btn-sm btn-accent" href="{% url 'portal:coach_attendance' s.pk %}">Mark attendance →</a>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<div class="grid cols-2">
+  {% for row in rows %}
+    <div class="card card-pad">
+      <div class="chip-row" style="justify-content:space-between">
+        <h3 style="margin:0">{{ row.batch.sport.name }} · {{ row.batch.name }}</h3>
+        {% if row.session.status == 'LIVE' %}<span class="badge green">Live</span>
+        {% elif row.session.status == 'COMPLETED' %}<span class="badge gray">Done</span>
+        {% else %}<span class="badge amber">Scheduled</span>{% endif %}
+      </div>
+      <p class="small muted" style="margin:.35rem 0">📍 {{ row.batch.branch.name }} · 🕒 {{ row.batch.schedule_label }}</p>
+      {% if row.session.status == 'LIVE' %}
+        <a class="btn btn-accent btn-block" href="{% url 'portal:coach_attendance' row.session.pk %}">Mark attendance</a>
+      {% elif row.session.status == 'COMPLETED' %}
+        <a class="btn btn-ghost btn-block" href="{% url 'portal:coach_attendance' row.session.pk %}">View attendance</a>
+      {% else %}
+        <a class="btn btn-primary btn-block" href="{% url 'portal:coach_checkin' row.batch.pk %}">📍 Check in &amp; start</a>
+      {% endif %}
+    </div>
+  {% empty %}
+    <div class="empty" style="grid-column:1/-1"><div class="empty-ico">🌤️</div><p>No sessions scheduled for today. Enjoy the break!</p></div>
+  {% endfor %}
+</div>
+{% endblock %}

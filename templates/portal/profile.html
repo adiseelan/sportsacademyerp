@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Profile{% endblock %}
+{% block topbar %}Profile{% endblock %}
+{% block content %}
+<div class="page-head"><h1>My profile</h1></div>
+<div class="grid cols-2">
+  <div class="card card-pad">
+    <h3>Account</h3>
+    <dl class="kv">
+      <dt>Name</dt><dd>{{ user.full_name }}</dd>
+      <dt>Email</dt><dd>{{ user.email }}</dd>
+      <dt>Phone</dt><dd>{{ user.phone|default:'—' }}</dd>
+      <dt>Role</dt><dd><span class="badge indigo">{{ current_role_label }}</span></dd>
+      {% if user.academy %}<dt>Academy</dt><dd>{{ user.academy.name }}</dd>{% endif %}
+      <dt>Last login</dt><dd>{{ user.last_login|date:'d M Y, H:i'|default:'—' }}</dd>
+    </dl>
+  </div>
+  <div class="card card-pad">
+    <h3>Security</h3>
+    <p class="small muted">Your account is protected by one-time email codes (OTP). There is no reusable
+      password to steal or phish.</p>
+    <ul class="list-reset small" style="line-height:1.9">
+      <li>✅ Passwordless OTP sign-in</li>
+      <li>✅ Codes expire quickly &amp; are single-use</li>
+      <li>✅ Rate-limited to 5 code requests, then a cooldown</li>
+      <li>✅ Sessions time out after inactivity</li>
+    </ul>
+    <form method="post" action="{% url 'accounts:logout' %}" style="margin-top:.6rem">{% csrf_token %}
+      <button class="btn btn-danger btn-sm" type="submit">Sign out of all this session</button></form>
+  </div>
+</div>
+{% endblock %}

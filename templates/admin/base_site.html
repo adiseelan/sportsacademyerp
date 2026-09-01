@@ -1,0 +1,48 @@
+{% extends "admin/base.html" %}
+{% comment %}
+Force the built-in Django admin to a light (white) theme that matches the
+portal, regardless of the OS dark-mode setting or the admin theme toggle,
+and brand the header in the app's indigo.
+{% endcomment %}
+
+{% block title %}{{ title }} | SportsAcademy ERP{% endblock %}
+
+{% block branding %}
+<div id="site-name"><a href="{% url 'admin:index' %}">🏆 SportsAcademy ERP — Back office</a></div>
+{% endblock %}
+
+{% block extrastyle %}{{ block.super }}
+<style>
+  /* Brand the header + primary controls (all themes). */
+  :root, html[data-theme] {
+    --primary: #4338ca; --secondary: #4338ca;
+    --header-bg: #4338ca; --header-branding-color: #fff; --header-color: #fff;
+    --header-link-color: #fff; --breadcrumbs-bg: #3730a3;
+    --link-fg: #4338ca; --link-selected-fg: #4338ca; --link-hover-color: #3730a3;
+    --button-bg: #4338ca; --button-hover-bg: #3730a3;
+    --default-button-bg: #3730a3; --default-button-hover-bg: #4338ca;
+    --object-tools-bg: #6b7280; --object-tools-hover-bg: #374151;
+  }
+  /* Force LIGHT surface colours even under OS dark mode / dark toggle. */
+  html[data-theme="dark"],
+  html[data-theme="dark"] body {
+    --body-fg:#333; --body-bg:#fff; --body-quiet-color:#666;
+    --body-medium-color:#444; --body-loud-color:#000;
+    --darkened-bg:#f7f8fb; --selected-bg:#eef0ff; --selected-row:#fef9c3;
+    --hairline-color:#e6e9f2; --border-color:#d9deea;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    html, html[data-theme="auto"], :root {
+      --body-fg:#333; --body-bg:#fff; --body-quiet-color:#666;
+      --body-medium-color:#444; --body-loud-color:#000;
+      --darkened-bg:#f7f8fb; --selected-bg:#eef0ff; --selected-row:#fef9c3;
+      --hairline-color:#e6e9f2; --border-color:#d9deea;
+      color-scheme: light;
+    }
+    body { background:#fff; color:#333; }
+  }
+  /* Keep it simply white — hide the auto/light/dark toggle. */
+  .theme-toggle { display: none !important; }
+</style>
+{% endblock %}

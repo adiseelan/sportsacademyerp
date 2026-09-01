@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Manager Dashboard{% endblock %}
+{% block topbar %}Branch Dashboard{% endblock %}
+{% block content %}
+
+<div class="page-head">
+  <div>
+    <h1>My branches</h1>
+    <div class="sub">
+      {% for b in branches %}<span class="badge indigo">{{ b.name }}</span> {% empty %}No branches assigned yet.{% endfor %}
+    </div>
+  </div>
+  <a class="btn btn-primary" href="{% url 'portal:student_create' %}">+ Add student</a>
+</div>
+
+<div class="grid cols-4" style="margin-bottom:1rem">
+  <div class="kpi accent"><div class="kpi-label">Collected</div><div class="kpi-value">₹{{ summary.collected|floatformat:0|intcomma }}</div></div>
+  <div class="kpi warn"><div class="kpi-label">Outstanding</div><div class="kpi-value">₹{{ summary.outstanding|floatformat:0|intcomma }}</div><div class="kpi-sub">{{ summary.unpaid_count }} unpaid</div></div>
+  <div class="kpi primary"><div class="kpi-label">Students</div><div class="kpi-value">{{ counts.students }}</div></div>
+  <div class="kpi"><div class="kpi-label">Active batches</div><div class="kpi-value">{{ counts.batches }}</div></div>
+</div>
+
+<div class="grid cols-2" style="margin-bottom:1rem">
+  <div class="card"><div class="card-head"><h3>Revenue trend</h3></div><div class="card-body">{{ trend_chart }}</div></div>
+  <div class="card">
+    <div class="card-head"><h3>🟢 Coaches on duty</h3><a class="small" href="{% url 'portal:live' %}">Live view →</a></div>
+    <div class="card-body">
+      <div class="table-wrap"><table class="data" style="min-width:auto">
+        <thead><tr><th>Coach</th><th>Status</th><th>Venue</th></tr></thead>
+        <tbody>
+        {% for r in coach_status %}
+          <tr><td>{{ r.coach.get_short_name }}</td>
+            <td>{% if r.live %}<span class="dot live"></span><span class="badge green">Live</span>{% else %}<span class="dot idle"></span><span class="badge gray">Idle</span>{% endif %}</td>
+            <td class="small muted">{{ r.venue|default:'—' }}</td></tr>
+        {% empty %}<tr><td colspan="3" class="muted small">No coaches in your branches.</td></tr>{% endfor %}
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<div class="card"><div class="card-head"><h3>Revenue by sport</h3></div><div class="card-body">{{ sport_chart }}</div></div>
+
+<div class="btn-row" style="margin-top:1rem">
+  <a class="btn" href="{% url 'portal:student_list' %}">🧑‍🎓 Students</a>
+  <a class="btn" href="{% url 'portal:fee_status' %}">💳 Fee status</a>
+  <a class="btn" href="{% url 'portal:reports' %}">📄 Reports</a>
+</div>
+{% endblock %}

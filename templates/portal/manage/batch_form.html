@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}{% if mode == 'edit' %}Edit{% else %}New{% endif %} Batch{% endblock %}
+{% block topbar %}{% if mode == 'edit' %}Edit Batch{% else %}New Batch{% endif %}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>{% if mode == 'edit' %}Edit batch{% else %}New batch{% endif %}</h1>
+  <a class="btn btn-ghost" href="{% url 'portal:batch_list' %}">← Back to batches</a>
+</div>
+<form method="post" class="card card-pad" style="max-width:640px">
+  {% csrf_token %}
+  {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+  <div class="form-grid">
+    {% include 'portal/manage/_field.html' with field=form.branch %}
+    {% include 'portal/manage/_field.html' with field=form.sport %}
+  </div>
+  {% include 'portal/manage/_field.html' with field=form.name %}
+  <div class="field">
+    <span class="field-label">Days of week</span>
+    <div class="checks checks-row">{{ form.days }}</div>
+  </div>
+  <div class="form-grid">
+    {% include 'portal/manage/_field.html' with field=form.start_time %}
+    {% include 'portal/manage/_field.html' with field=form.end_time %}
+    {% include 'portal/manage/_field.html' with field=form.capacity %}
+  </div>
+  <label class="check-inline">{{ form.is_active }} <span>Active</span></label>
+  <div class="btn-row" style="margin-top:1rem">
+    <button class="btn btn-primary" type="submit">Save batch</button>
+    <a class="btn btn-ghost" href="{% url 'portal:batch_list' %}">Cancel</a>
+  </div>
+</form>
+<p class="small muted" style="max-width:640px;margin-top:.7rem">
+  A batch is one sport at one branch (e.g. “Cricket · U-14 Evening”). Assign coaches from the Coaches page.
+</p>
+{% endblock %}

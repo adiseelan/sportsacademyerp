@@ -1,0 +1,22 @@
+{% extends "accounts/auth_base.html" %}
+{% block title %}Sign in{% endblock %}
+{% block auth_content %}
+  <h1 class="auth-title">Sign in</h1>
+  <p class="auth-lead">Enter your email and we'll send a one-time code.</p>
+
+  <form method="post" action="{% url 'accounts:login' %}" novalidate class="stack">
+    {% csrf_token %}
+    {% if request.GET.next %}<input type="hidden" name="next" value="{{ request.GET.next }}">{% endif %}
+    <label class="field">
+      <span class="field-label">{{ form.email.label }}</span>
+      {{ form.email }}
+      {% for err in form.email.errors %}<span class="field-error">{{ err }}</span>{% endfor %}
+    </label>
+    <button type="submit" class="btn btn-primary btn-block">Send code</button>
+  </form>
+
+  <p class="auth-hint">
+    You'll be able to request up to 5 codes before a short cooldown — this
+    protects your account from abuse.
+  </p>
+{% endblock %}

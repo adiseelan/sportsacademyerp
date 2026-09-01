@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Coaches{% endblock %}
+{% block topbar %}Coaches{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Coaches — real-time status</h1>
+  <a class="btn btn-primary" href="{% url 'portal:coach_create' %}">+ Add coach</a>
+</div>
+<div class="table-wrap">
+  <table class="data">
+    <thead><tr><th>Coach</th><th>Status</th><th>Current venue</th><th>Running</th><th>Contact</th><th></th></tr></thead>
+    <tbody>
+    {% for r in rows %}
+      <tr>
+        <td><span class="avatar" style="margin-right:.5rem">{{ r.coach.get_short_name|slice:':1'|upper }}</span>{{ r.coach.full_name }}</td>
+        <td>{% if r.live %}<span class="dot live"></span><span class="badge green">Live session</span>{% else %}<span class="dot idle"></span><span class="badge gray">Idle / off-duty</span>{% endif %}</td>
+        <td>{{ r.venue|default:'—' }}</td>
+        <td class="small">{% if r.session %}{{ r.session.batch }} <span class="muted">since {{ r.session.start_at|time:'H:i' }}</span>{% if r.session.manual_flagged %} <span class="badge amber">manual</span>{% endif %}{% else %}—{% endif %}</td>
+        <td class="small muted">{{ r.coach.phone|default:r.coach.email }}</td>
+        <td><a class="btn btn-sm" href="{% url 'portal:coach_assign' r.coach.pk %}">Assign batches</a></td>
+      </tr>
+    {% empty %}<tr><td colspan="6" class="empty"><div class="empty-ico">🧑‍🏫</div><p>No coaches yet.</p>
+      <a class="btn btn-primary" href="{% url 'portal:coach_create' %}">+ Add your first coach</a></td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

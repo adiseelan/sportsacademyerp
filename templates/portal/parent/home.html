@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}My Children{% endblock %}
+{% block topbar %}My Children{% endblock %}
+{% block content %}
+<div class="page-head"><h1>My children</h1>
+  <a class="btn btn-ghost" href="{% url 'portal:parent_fees' %}">💳 Fees &amp; payments</a></div>
+
+<div class="grid cols-2">
+{% for c in cards %}
+  <div class="card">
+    <div class="card-head">
+      <h3>{{ c.student.full_name }}</h3>
+      {% if c.outstanding > 0 %}<span class="badge red">₹{{ c.outstanding|floatformat:0|intcomma }} due</span>
+      {% else %}<span class="badge green">All paid</span>{% endif %}
+    </div>
+    <div class="card-body">
+      {% if c.live %}
+        {% for s in c.live %}
+          <div class="alert alert-success"><span class="dot live"></span> Session live now — {{ s.batch.sport.name }} with {{ s.coach.get_short_name|default:'coach' }}.</div>
+        {% endfor %}
+      {% endif %}
+      <div class="table-wrap"><table class="data" style="min-width:auto">
+        <thead><tr><th>Sport</th><th>Batch</th><th>Coach</th><th>Schedule</th></tr></thead>
+        <tbody>
+        {% for e in c.student.enrollments.all %}
+          <tr><td>{{ e.sport.name }}</td><td class="small">{{ e.batch.name }}<br><span class="muted">{{ e.branch.name }}</span></td>
+            <td class="small">{% for co in e.batch.coaches.all %}{{ co.get_short_name }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}</td>
+            <td class="small muted">{{ e.batch.schedule_label }}</td></tr>
+        {% empty %}<tr><td colspan="4" class="muted small">Not enrolled yet.</td></tr>{% endfor %}
+        </tbody>
+      </table></div>
+      <div class="btn-row" style="margin-top:.8rem">
+        <a class="btn btn-sm" href="{% url 'portal:parent_attendance' c.student.pk %}">📅 Attendance</a>
+        <a class="btn btn-sm" href="{% url 'portal:parent_fees' %}">💳 Fees</a>
+      </div>
+    </div>
+  </div>
+{% empty %}
+  <div class="empty" style="grid-column:1/-1"><div class="empty-ico">👨‍👩‍👧</div><p>No children linked to your account yet. Please contact your academy.</p></div>
+{% endfor %}
+</div>
+{% endblock %}

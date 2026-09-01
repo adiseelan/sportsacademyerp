@@ -1,0 +1,26 @@
+{% extends "accounts/auth_base.html" %}
+{% block title %}Enter code{% endblock %}
+{% block auth_content %}
+  <h1 class="auth-title">Enter your code</h1>
+  <p class="auth-lead">We sent a {{ form.code.field.max_length|default:6 }}-digit code to
+    <b>{{ email }}</b>.</p>
+
+  <form method="post" action="{% url 'accounts:verify' %}" novalidate class="stack">
+    {% csrf_token %}
+    <label class="field">
+      <span class="field-label">{{ form.code.label }}</span>
+      {{ form.code }}
+      {% for err in form.code.errors %}<span class="field-error">{{ err }}</span>{% endfor %}
+    </label>
+    <button type="submit" class="btn btn-primary btn-block">Verify &amp; sign in</button>
+  </form>
+
+  <form method="post" action="{% url 'accounts:resend' %}" class="resend-form">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-ghost btn-block">Resend code</button>
+  </form>
+
+  <p class="auth-hint">
+    <a href="{% url 'accounts:login' %}">Use a different email</a>
+  </p>
+{% endblock %}

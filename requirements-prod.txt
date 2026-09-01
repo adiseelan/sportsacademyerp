@@ -1,0 +1,9 @@
+# Production extras — install ON TOP of requirements.txt for a real deploy.
+#   pip install -r requirements.txt -r requirements-prod.txt
+psycopg[binary]>=3.1       # PostgreSQL driver
+gunicorn>=21.2             # WSGI server (Railway/Render/VPS; NOT needed on PythonAnywhere)
+whitenoise>=6.6            # hashed + compressed static serving
+
+# Optional real integrations (install when you wire the keys):
+# razorpay>=1.4            # online payments
+# twilio>=8.10            # SMS / WhatsApp

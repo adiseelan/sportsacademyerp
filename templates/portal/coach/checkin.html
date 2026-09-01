@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Check in{% endblock %}
+{% block topbar %}Venue Check-in{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>Check in</h1><div class="sub">{{ batch.sport.name }} · {{ batch.name }} · 📍 {{ batch.branch.name }}</div></div>
+  <a class="btn btn-ghost" href="{% url 'portal:coach_today' %}">← Today</a>
+</div>
+
+<div class="card card-pad" style="max-width:480px;margin:0 auto">
+  <p class="small muted">To start the session you must be within
+    <b>{{ batch.branch.geofence_radius_m }} m</b> of the venue. Your location is checked once and not stored beyond this check-in.</p>
+
+  <div id="geoStatus" class="alert alert-info">Preparing location…</div>
+
+  <form method="post" id="checkinForm" action="{% url 'portal:coach_checkin' batch.pk %}">
+    {% csrf_token %}
+    <input type="hidden" name="lat" id="lat">
+    <input type="hidden" name="lng" id="lng">
+    <button class="btn btn-accent btn-block" id="geoCheckinBtn" type="submit" disabled>📍 Start session (geo-verified)</button>
+
+    <div id="manualBox" style="display:none;margin-top:1rem">
+      <div class="divider"></div>
+      <label class="field"><span class="field-label">Manual check-in reason</span>
+        {{ manual_form.manual_reason }}
+        <span class="field-error">Manual check-ins are flagged for manager review.</span>
+      </label>
+      <button class="btn btn-block" type="submit">Start with manual check-in</button>
+    </div>
+  </form>
+
+  <button class="btn btn-ghost btn-sm btn-block" id="retryGeo" type="button" style="margin-top:.7rem">↻ Retry location</button>
+</div>
+{% endblock %}

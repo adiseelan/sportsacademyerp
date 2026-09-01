@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Live Sessions{% endblock %}
+{% block topbar %}Live Sessions{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1><span class="dot live"></span>Who's running a session</h1>
+    <div class="sub" id="liveAsOf">Connecting…</div></div>
+  <span class="pill"><b id="liveCount">0</b> live</span>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <div id="liveData" data-url="{% url 'portal:live_json' %}">
+      <div class="empty"><div class="empty-ico">📡</div><p>Loading live sessions…</p></div>
+    </div>
+  </div>
+</div>
+<p class="small muted" style="margin-top:.6rem">Auto-refreshes every few seconds. Coach check-ins appear here in near real time.</p>
+{% endblock %}

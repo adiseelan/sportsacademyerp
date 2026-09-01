@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Add Student{% endblock %}
+{% block topbar %}Add Student{% endblock %}
+{% block content %}
+<div class="page-head"><h1>Add a student</h1>
+  <a class="btn btn-ghost" href="{% url 'portal:student_list' %}">← Cancel</a></div>
+
+<form method="post" class="card card-pad" style="max-width:760px">
+  {% csrf_token %}
+  {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+
+  <h3>Student details</h3>
+  <div class="form-grid">
+    <label class="field"><span class="field-label">Full name *</span>{{ form.full_name }}
+      {% for e in form.full_name.errors %}<span class="field-error">{{ e }}</span>{% endfor %}</label>
+    <label class="field"><span class="field-label">Date of birth</span>{{ form.date_of_birth }}</label>
+    <label class="field"><span class="field-label">Gender</span>{{ form.gender }}</label>
+    <label class="field"><span class="field-label">Student phone</span>{{ form.contact_phone }}</label>
+  </div>
+  <label class="field"><span class="field-label">Address</span>{{ form.address }}</label>
+
+  <div class="divider"></div>
+  <h3>Parent / guardian</h3>
+  <p class="small muted">A parent account is created from this email — they sign in with an OTP, no password needed.</p>
+  <div class="form-grid">
+    <label class="field"><span class="field-label">Parent name *</span>{{ form.parent_full_name }}
+      {% for e in form.parent_full_name.errors %}<span class="field-error">{{ e }}</span>{% endfor %}</label>
+    <label class="field"><span class="field-label">Parent email *</span>{{ form.parent_email }}
+      {% for e in form.parent_email.errors %}<span class="field-error">{{ e }}</span>{% endfor %}</label>
+    <label class="field"><span class="field-label">Parent phone</span>{{ form.parent_phone }}</label>
+    <label class="field"><span class="field-label">Relationship</span>{{ form.relationship }}</label>
+  </div>
+
+  <div class="divider"></div>
+  <h3>First enrollment <span class="small muted">(optional)</span></h3>
+  <div class="form-grid">
+    <label class="field"><span class="field-label">Batch</span>{{ form.batch }}</label>
+    <label class="field"><span class="field-label">Fee plan</span>{{ form.fee_plan }}</label>
+  </div>
+
+  <div class="btn-row" style="margin-top:.6rem">
+    <button class="btn btn-primary" type="submit">Create student</button>
+    <a class="btn btn-ghost" href="{% url 'portal:student_list' %}">Cancel</a>
+  </div>
+</form>
+{% endblock %}
