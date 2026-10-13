@@ -9,81 +9,62 @@
     <h1>Revenue &amp; operations</h1>
     <div class="sub">Academy-wide view across all branches and sports.</div>
   </div>
-  <a class="btn btn-ghost" href="{% url 'portal:reports' %}">📄 Export reports</a>
+  {% include "portal/admin/_period_picker.html" %}
 </div>
 
-<form method="get" class="card card-pad" style="margin-bottom:1rem">
-  <div class="form-grid" style="grid-template-columns:repeat(4,1fr)">
-    <label class="field"><span class="field-label">From</span>
-      <input type="date" name="from" value="{{ filters.date_from|date:'Y-m-d' }}"></label>
-    <label class="field"><span class="field-label">To</span>
-      <input type="date" name="to" value="{{ filters.date_to|date:'Y-m-d' }}"></label>
-    <label class="field"><span class="field-label">Branch</span>
-      <select name="branch"><option value="">All</option>
-        {% for b in branches %}<option value="{{ b.id }}" {% if filters.branch.id == b.id %}selected{% endif %}>{{ b.name }}</option>{% endfor %}
-      </select></label>
-    <label class="field"><span class="field-label">Sport</span>
-      <select name="sport"><option value="">All</option>
-        {% for s in sports %}<option value="{{ s.id }}" {% if filters.sport.id == s.id %}selected{% endif %}>{{ s.name }}</option>{% endfor %}
-      </select></label>
-  </div>
-  <button class="btn btn-primary btn-sm" type="submit">Apply filters</button>
-</form>
-
-<div class="grid cols-4" style="margin-bottom:1rem">
-  <div class="kpi accent"><div class="kpi-label">Collected</div><div class="kpi-value">₹{{ summary.collected|floatformat:0|intcomma }}</div><div class="kpi-sub">payments received</div></div>
-  <div class="kpi warn"><div class="kpi-label">Outstanding</div><div class="kpi-value">₹{{ summary.outstanding|floatformat:0|intcomma }}</div><div class="kpi-sub">{{ summary.unpaid_count }} unpaid invoice(s)</div></div>
-  <div class="kpi danger"><div class="kpi-label">Overdue</div><div class="kpi-value">₹{{ summary.overdue|floatformat:0|intcomma }}</div><div class="kpi-sub">past due date</div></div>
-  <div class="kpi primary"><div class="kpi-label">Students</div><div class="kpi-value">{{ counts.students }}</div><div class="kpi-sub">{{ counts.batches }} active batches</div></div>
+<div class="grid kpi-grid">
+  <div class="kpi accent"><div class="kpi-label">Collected</div><div class="kpi-value">₹{{ summary.collected|floatformat:0|intcomma }}</div><div class="kpi-sub">received in {{ period.label }}</div></div>
+  <div class="kpi warn"><div class="kpi-label">Outstanding</div><div class="kpi-value">₹{{ summary.outstanding|floatformat:0|intcomma }}</div><div class="kpi-sub">{{ summary.unpaid_count }} unpaid invoice(s) due by {{ period.end|date:'d M' }}</div></div>
+  <div class="kpi primary"><div class="kpi-label">Students</div><div class="kpi-value">{{ counts.students }}</div><div class="kpi-sub">{{ counts.batches }} active batches{% if counts.new_students %} · +{{ counts.new_students }} new{% endif %}</div></div>
 </div>
 
-<div class="grid cols-3" style="margin-bottom:1rem">
+<div class="grid cols-3">
   <div class="card">
-    <div class="card-head"><h3>Revenue trend</h3><span class="small muted">last 6 months</span></div>
+    <div class="card-head"><h3>Revenue trend</h3><span class="small muted">{{ trend_label }}</span></div>
     <div class="card-body">{{ trend_chart }}</div>
   </div>
   <div class="card">
-    <div class="card-head"><h3>Collected vs outstanding</h3></div>
+    <div class="card-head"><h3>Collected vs outstanding</h3><span class="small muted">{{ period.label }}</span></div>
     <div class="card-body center">
       {{ donut }}
-      <div class="chip-row center" style="justify-content:center;margin-top:.6rem">
+      <div class="legend">
         <span class="badge green">Collected</span><span class="badge amber">Outstanding</span>
       </div>
     </div>
   </div>
   <div class="card">
-    <div class="card-head"><h3>By branch</h3></div>
+    <div class="card-head"><h3>By branch</h3><span class="small muted">{{ period.label }}</span></div>
     <div class="card-body">{{ branch_chart }}</div>
   </div>
 </div>
 
 <div class="grid cols-2">
   <div class="card">
-    <div class="card-head"><h3>🟢 Live sessions</h3><a class="small" href="{% url 'portal:live' %}">Open live view →</a></div>
+    <div class="card-head"><h3>🟢 Live sessions</h3><a class="small" href="{% url 'portal:live' %}">View →</a></div>
     <div class="card-body">
       {% for s in live %}
-        <div class="chip-row" style="justify-content:space-between;padding:.4rem 0;border-bottom:1px solid var(--border)">
+        <div class="list-row">
           <span><span class="dot live"></span>{{ s.coach.get_short_name|default:'—' }} · {{ s.batch.sport.name }}</span>
           <span class="small muted">{{ s.batch.branch.name }}</span>
         </div>
-      {% empty %}<p class="muted small">No sessions live right now.</p>{% endfor %}
+      {% empty %}<p class="muted small m-0">No sessions live right now.</p>{% endfor %}
     </div>
   </div>
   <div class="card">
-    <div class="card-head"><h3>Recent payments</h3></div>
+    <div class="card-head"><h3>Recent payments</h3><span class="small muted">{{ period.label }}</span></div>
     <div class="card-body">
       {% for p in recent_payments %}
-        <div class="chip-row" style="justify-content:space-between;padding:.4rem 0;border-bottom:1px solid var(--border)">
+        <div class="list-row">
           <span>{{ p.student.full_name }} <span class="small muted">· {{ p.get_method_display }}</span></span>
           <span class="badge green">₹{{ p.amount|floatformat:0|intcomma }}</span>
         </div>
-      {% empty %}<p class="muted small">No payments yet.</p>{% endfor %}
+      {% empty %}<p class="muted small m-0">No payments in {{ period.label }}.</p>{% endfor %}
     </div>
   </div>
 </div>
 
-<div class="card" style="margin-top:1rem">
-  <div class="card-head"><h3>Revenue by sport</h3></div>
+<div class="card">
+  <div class="card-head"><h3>Revenue by sport</h3><span class="small muted">{{ period.label }}</span></div>
   <div class="card-body">{{ sport_chart }}</div>
 </div>
 

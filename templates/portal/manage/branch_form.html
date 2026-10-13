@@ -4,10 +4,10 @@
 {% block content %}
 <div class="page-head">
   <h1>{% if mode == 'edit' %}Edit branch{% else %}New branch{% endif %}</h1>
-  <a class="btn btn-ghost" href="{% url 'portal:branches' %}">← Back to branches</a>
+  <a class="btn btn-ghost" href="{% if branch %}{% url 'portal:branch_detail' branch.pk %}{% else %}{% url 'portal:branches' %}{% endif %}">← Back</a>
 </div>
 
-<form method="post" class="card card-pad" style="max-width:740px">
+<form method="post" enctype="multipart/form-data" class="card card-pad narrow-lg">
   {% csrf_token %}
   {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
 
@@ -23,7 +23,21 @@
     {% include 'portal/manage/_field.html' with field=form.phone %}
   </div>
 
-  <div class="field">
+  <div class="field" id="photo">
+    <span class="field-label">Cover photo</span>
+    <div class="photo-field">
+      {% if branch and branch.photo %}<img class="photo-preview" src="{{ branch.photo.url }}" alt="Current cover photo">
+      {% else %}<span class="photo-preview photo-empty" aria-hidden="true">🏟️</span>{% endif %}
+      <div class="photo-inputs">
+        <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" aria-label="Upload cover photo">
+        {% if branch and branch.photo %}<label class="check-inline"><input type="checkbox" name="photo-clear"> <span>Remove current photo</span></label>{% endif %}
+        <span class="small muted">JPG, PNG or WebP · up to 5 MB · shown on the Branches page.</span>
+        {% for e in form.photo.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="field" id="sports">
     <span class="field-label">Sports offered</span>
     <div class="checks">{{ form.sports }}</div>
     {% if not form.sports.field.queryset %}<span class="small muted">No sports yet — <a href="{% url 'portal:sport_create' %}">add a sport</a> first.</span>{% endif %}
@@ -31,12 +45,12 @@
 
   <label class="check-inline">{{ form.is_active }} <span>Active</span></label>
 
-  <div class="btn-row" style="margin-top:1rem">
+  <div class="btn-row mt-md">
     <button class="btn btn-primary" type="submit">Save branch</button>
-    <a class="btn btn-ghost" href="{% url 'portal:branches' %}">Cancel</a>
+    <a class="btn btn-ghost" href="{% if branch %}{% url 'portal:branch_detail' branch.pk %}{% else %}{% url 'portal:branches' %}{% endif %}">Cancel</a>
   </div>
 </form>
-<p class="small muted" style="max-width:740px;margin-top:.7rem">
+<p class="small muted narrow-lg mt-sm">
   Geo-coordinates + radius enable geo-fenced coach check-in. Leave blank to allow manual check-in only.
 </p>
 {% endblock %}

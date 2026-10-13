@@ -2,26 +2,31 @@
 {% block title %}Notifications{% endblock %}
 {% block topbar %}Notifications{% endblock %}
 {% block content %}
-<div class="page-head"><h1>Notifications</h1>
+<div class="page-head page-head-end">
   <form method="post" action="{% url 'portal:notifications_read_all' %}">{% csrf_token %}
-    <button class="btn btn-sm" type="submit">Mark all read</button></form></div>
+    <button class="btn btn-sm" type="submit">Mark all read</button></form>
+</div>
 
 <div class="card">
-  <div class="card-body">
+  <div class="card-body" data-note-list>
     {% for n in notes %}
-      <div class="chip-row" style="justify-content:space-between;align-items:flex-start;padding:.7rem 0;border-bottom:1px solid var(--border);{% if not n.is_read %}font-weight:600{% endif %}">
-        <div style="min-width:0">
-          <div>{% if not n.is_read %}<span class="dot live" style="background:var(--primary)"></span>{% endif %}{{ n.title }}</div>
-          <div class="small muted" style="font-weight:400">{{ n.body }}</div>
-          <div class="small muted" style="font-weight:400">{{ n.created_at|date:'d M Y, H:i' }}</div>
+      <div class="list-row items-start note{% if not n.is_read %} unread{% endif %}">
+        <div class="min-w-0">
+          {% if n.url %}
+            <form method="post" action="{% url 'portal:notification_read' n.pk %}">{% csrf_token %}
+              <button class="note-title" type="submit">{% if not n.is_read %}<span class="dot unread"></span>{% endif %}{{ n.title }}</button>
+            </form>
+          {% else %}
+            <div>{% if not n.is_read %}<span class="dot unread"></span>{% endif %}{{ n.title }}</div>
+          {% endif %}
+          <div class="small muted">{{ n.body }}</div>
+          <div class="small muted">{{ n.created_at|date:'d M Y, H:i' }}</div>
         </div>
-        {% if n.url %}
-        <form method="post" action="{% url 'portal:notification_read' n.pk %}">{% csrf_token %}
-          <button class="btn btn-sm btn-ghost" type="submit">Open →</button></form>
-        {% elif not n.is_read %}
-        <form method="post" action="{% url 'portal:notification_read' n.pk %}">{% csrf_token %}
-          <button class="btn btn-sm btn-ghost" type="submit">✓</button></form>
-        {% endif %}
+        <form method="post" action="{% url 'portal:notification_dismiss' n.pk %}" data-dismiss>{% csrf_token %}
+          <button class="btn-x" type="submit" aria-label="Dismiss notification" title="Dismiss">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5.5 5.5l9 9M14.5 5.5l-9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>
+          </button>
+        </form>
       </div>
     {% empty %}<div class="empty"><div class="empty-ico">🔔</div><p>No notifications.</p></div>{% endfor %}
   </div>

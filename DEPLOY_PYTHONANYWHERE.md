@@ -88,6 +88,7 @@ application = get_wsgi_application()
 | URL | Directory |
 |-----|-----------|
 | `/static/` | `/home/USERNAME/sportsacademyerp/staticfiles` |
+| `/media/` | `/home/USERNAME/sportsacademyerp/media` |
 
 ## 5. Reload
 

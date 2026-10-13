@@ -1,3 +1,5 @@
+import os
+
 from django import forms
 from django.utils import timezone
 
@@ -99,7 +101,7 @@ class BranchForm(forms.ModelForm):
         model = Branch
         fields = [
             "name", "code", "address", "latitude", "longitude",
-            "geofence_radius_m", "phone", "sports", "is_active",
+            "geofence_radius_m", "phone", "photo", "sports", "is_active",
         ]
         widgets = {
             "address": forms.Textarea(attrs={"rows": 2}),
@@ -115,6 +117,18 @@ class BranchForm(forms.ModelForm):
                 academy_id=user.academy_id, is_active=True
             )
         self.fields["sports"].required = False
+
+    PHOTO_MAX_BYTES = 5 * 1024 * 1024
+    PHOTO_TYPES = (".jpg", ".jpeg", ".png", ".webp")
+
+    def clean_photo(self):
+        photo = self.cleaned_data.get("photo")
+        if photo and hasattr(photo, "size") and getattr(photo, "content_type", None) is not None:  # a new upload
+            if os.path.splitext(photo.name)[1].lower() not in self.PHOTO_TYPES:
+                raise forms.ValidationError("Use a JPG, PNG or WebP image.")
+            if photo.size > self.PHOTO_MAX_BYTES:
+                raise forms.ValidationError("Photo is too large — 5 MB maximum.")
+        return photo
 
 
 class SportForm(forms.ModelForm):

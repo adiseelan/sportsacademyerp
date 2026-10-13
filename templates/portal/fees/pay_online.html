@@ -6,9 +6,9 @@
 <div class="page-head"><h1>Pay fees</h1>
   <a class="btn btn-ghost" href="{% url 'portal:invoice_detail' invoice.pk %}">← Back</a></div>
 
-<div class="card card-pad" style="max-width:460px;margin:0 auto">
+<div class="card card-pad narrow-sm mx-auto">
   <div class="center">
-    <div style="font-size:2.5rem">💳</div>
+    <div class="emoji-xl">💳</div>
     <h2>₹{{ invoice.balance|floatformat:0|intcomma }}</h2>
     <p class="muted">{{ invoice.student.full_name }} · {{ invoice.sport.name }} · {{ invoice.period_label }}</p>
   </div>

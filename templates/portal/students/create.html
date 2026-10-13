@@ -5,7 +5,7 @@
 <div class="page-head"><h1>Add a student</h1>
   <a class="btn btn-ghost" href="{% url 'portal:student_list' %}">← Cancel</a></div>
 
-<form method="post" class="card card-pad" style="max-width:760px">
+<form method="post" class="card card-pad narrow-lg">
   {% csrf_token %}
   {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
 
@@ -38,7 +38,7 @@
     <label class="field"><span class="field-label">Fee plan</span>{{ form.fee_plan }}</label>
   </div>
 
-  <div class="btn-row" style="margin-top:.6rem">
+  <div class="btn-row mt-sm">
     <button class="btn btn-primary" type="submit">Create student</button>
     <a class="btn btn-ghost" href="{% url 'portal:student_list' %}">Cancel</a>
   </div>

@@ -6,7 +6,7 @@
   <h1>Add {{ role|lower }}</h1>
   <a class="btn btn-ghost" href="{% if role == 'Coach' %}{% url 'portal:coaches' %}{% else %}{% url 'portal:managers' %}{% endif %}">← Back</a>
 </div>
-<form method="post" class="card card-pad" style="max-width:640px">
+<form method="post" class="card card-pad narrow">
   {% csrf_token %}
   <h3>{{ role }} details</h3>
   <div class="form-grid">
@@ -24,7 +24,7 @@
     <div class="checks">{{ aform.batches }}</div>
   {% endif %}
 
-  <div class="btn-row" style="margin-top:1rem">
+  <div class="btn-row mt-md">
     <button class="btn btn-primary" type="submit">Create {{ role|lower }}</button>
     <a class="btn btn-ghost" href="{% if role == 'Coach' %}{% url 'portal:coaches' %}{% else %}{% url 'portal:managers' %}{% endif %}">Cancel</a>
   </div>

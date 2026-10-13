@@ -10,6 +10,7 @@ urlpatterns = [
     # Notifications & profile
     path("notifications/", common.notifications_list, name="notifications"),
     path("notifications/<int:pk>/read/", common.notification_read, name="notification_read"),
+    path("notifications/<int:pk>/dismiss/", common.notification_dismiss, name="notification_dismiss"),
     path("notifications/read-all/", common.notifications_read_all, name="notifications_read_all"),
     path("profile/", common.profile, name="profile"),
 
@@ -20,6 +21,7 @@ urlpatterns = [
     # Admin
     path("admin/", dashboards.admin_dashboard, name="admin_dashboard"),
     path("admin/branches/", dashboards.branches_list, name="branches"),
+    path("admin/branches/<int:pk>/", dashboards.branch_detail, name="branch_detail"),
     path("admin/branches/new/", manage.branch_create, name="branch_create"),
     path("admin/branches/<int:pk>/edit/", manage.branch_edit, name="branch_edit"),
     path("admin/sports/new/", manage.sport_create, name="sport_create"),

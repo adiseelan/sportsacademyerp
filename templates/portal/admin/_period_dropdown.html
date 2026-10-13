@@ -1,0 +1,40 @@
+{% comment %}
+  Month / Year period picker (<details> + radio tabs; works under the strict CSP without JS).
+  Needs: period, month_options, year_options. Optional: period_prefix — extra query string
+  kept on the option links, e.g. "tab=fees&" on a branch's Fees tab.
+{% endcomment %}
+<details class="dropdown period-picker">
+  <summary class="period-btn" aria-label="Choose reporting period">
+    <svg class="period-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="3.5" y="5" width="17" height="15.5" rx="2.5"></rect><path d="M3.5 10h17M8 3v4M16 3v4"></path>
+    </svg>
+    <span class="period-text"><b>{{ period.label }}</b><small>{{ period.range_label }}</small></span>
+    <svg class="chev" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 7.5l5 5 5-5"></path></svg>
+  </summary>
+
+  <div class="dropdown-panel period-menu">
+    <input class="sr-only" type="radio" name="period_mode" id="pmMonth" {% if not period.is_year %}checked{% endif %}>
+    <input class="sr-only" type="radio" name="period_mode" id="pmYear" {% if period.is_year %}checked{% endif %}>
+    <div class="period-tabs">
+      <label for="pmMonth">Monthly</label>
+      <label for="pmYear">Yearly</label>
+    </div>
+
+    <div class="period-list period-list-month">
+      {% for opt in month_options %}
+        <a class="period-opt{% if opt.value == period.value %} is-selected{% endif %}" href="?{{ period_prefix }}period={{ opt.value }}"{% if opt.value == period.value %} aria-current="true"{% endif %}>
+          <span><b>{{ opt.option_label }}</b><small>{{ opt.range_label }}</small></span>
+          {% if opt.value == period.value %}<svg class="period-check" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"></circle><path d="M6 10.2l2.6 2.6L14 7.4" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>{% endif %}
+        </a>
+      {% endfor %}
+    </div>
+    <div class="period-list period-list-year">
+      {% for opt in year_options %}
+        <a class="period-opt{% if opt.value == period.value %} is-selected{% endif %}" href="?{{ period_prefix }}period={{ opt.value }}"{% if opt.value == period.value %} aria-current="true"{% endif %}>
+          <span><b>{{ opt.option_label }}</b><small>{{ opt.range_label }}</small></span>
+          {% if opt.value == period.value %}<svg class="period-check" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"></circle><path d="M6 10.2l2.6 2.6L14 7.4" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>{% endif %}
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</details>

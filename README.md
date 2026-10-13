@@ -70,7 +70,7 @@ That account signs into the **portal** at `/auth/login/` with an email OTP
 own white-themed screens to create and assign everything:
 
 - **Branches** → *+ New branch* (name, geo-coordinates, radius, sports)
-- **Batches** → *+ New batch* (branch + sport + schedule)
+- **Batches** → open a branch → *Batches* tab → *+ New batch* (sport + schedule)
 - **Coaches** → *+ Add coach*, then *Assign batches* (reassign anytime)
 - **Managers** → *+ Add manager*, then *Assign branches* (reassign anytime)
 - **Parents** are created automatically when you add a student (by email)
@@ -172,8 +172,8 @@ This was a hard requirement ("nobody can hack it"). The posture:
 
 ## 5. Feature tour by role
 
-**Admin** — academy-wide revenue (collected / outstanding / overdue) with
-trend, by-branch and by-sport charts and drill-down to transactions; branch,
+**Admin** — academy-wide revenue (collected / outstanding) for any month or
+year (period picker), with trend, by-branch and by-sport charts, a live-sessions view and recent payments; branch,
 coach (with live status), and manager management; full financial control;
 audit trail; CSV reports.
 
@@ -210,6 +210,11 @@ gunicorn config.wsgi:application --bind 0.0.0.0:8000
 Static files are served hashed + compressed via WhiteNoise. Works cleanly on
 **Railway** and **PythonAnywhere**.
 
+**Uploaded media** (branch cover photos) is stored in `media/` (`MEDIA_ROOT`).
+Django serves it only with `DEBUG=True`; in production map the URL `/media/`
+to that folder on your web server (PythonAnywhere: *Web → Static files*), or
+use object storage.
+
 ### Real providers (all optional — safe stubs by default)
 
 | Capability | Default (works now) | Go live |
@@ -238,8 +243,8 @@ overdue fees (firing reminders). Schedule it **daily**, e.g. cron:
 ## 7. Testing
 
 ```bash
-python manage.py test          # 20 tests: OTP rate-limit + brute-force,
-                               # role scoping, fee engine, access control
+python manage.py test          # 63 tests: OTP rate-limit + brute-force, role scoping, fee engine,
+                               # access control, admin dashboard + period picker, CSP-safe templates
 python manage.py check --deploy   # security posture (0 issues under prod)
 ```
 
@@ -255,5 +260,9 @@ python manage.py check --deploy   # security posture (0 issues under prod)
   parent→pay→receipt flow is demoable end to end.
 - Multi-academy (multi-tenant) is **schema-ready** (academy FK everywhere)
   though only one academy is in scope, per the PRD.
+- **Front-end convention:** the CSP only allows `'self'` for styles and scripts, so
+  templates must not use inline `style="…"` or `onclick=` / `onchange=` — browsers
+  silently ignore them. Use the helper classes at the bottom of `static/css/app.css`
+  and the `data-*` hooks in `static/js/app.js`; a unit test enforces this.
 
 Built as a master-level reference implementation. Enjoy. 🏆

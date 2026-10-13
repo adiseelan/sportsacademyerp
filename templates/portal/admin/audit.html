@@ -4,7 +4,7 @@
 {% block content %}
 <div class="page-head"><h1>Audit trail</h1>
   <form method="get">
-    <select name="action" onchange="this.form.submit()">
+    <select name="action" data-autosubmit>
       <option value="">All actions</option>
       {% for a in actions %}<option value="{{ a }}" {% if a == action %}selected{% endif %}>{{ a }}</option>{% endfor %}
     </select>

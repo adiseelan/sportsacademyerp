@@ -4,11 +4,11 @@
 {% block content %}
 <div class="page-head"><h1>Add a sport</h1>
   <a class="btn btn-ghost" href="{% url 'portal:branches' %}">← Back</a></div>
-<form method="post" class="card card-pad" style="max-width:460px">
+<form method="post" class="card card-pad narrow-sm">
   {% csrf_token %}
   {% include 'portal/manage/_field.html' with field=form.name %}
   <label class="check-inline">{{ form.is_active }} <span>Active</span></label>
-  <div class="btn-row" style="margin-top:1rem">
+  <div class="btn-row mt-md">
     <button class="btn btn-primary" type="submit">Add sport</button>
     <a class="btn btn-ghost" href="{% url 'portal:branches' %}">Cancel</a>
   </div>

@@ -16,13 +16,13 @@
       {% if session.status == 'LIVE' %}<span class="small muted">Choose a status for each student</span>{% endif %}</div>
     <div class="card-body">
       {% for row in roster_rows %}
-        <div class="chip-row" style="justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border)">
-          <span><span class="avatar" style="margin-right:.5rem">{{ row.student.full_name|slice:':1'|upper }}</span>{{ row.student.full_name }}</span>
+        <div class="list-row">
+          <span><span class="avatar mr-sm">{{ row.student.full_name|slice:':1'|upper }}</span>{{ row.student.full_name }}</span>
           {% if session.status == 'LIVE' %}
             <span class="chip-row">
-              <label class="btn btn-sm"><input type="radio" name="status_{{ row.student.id }}" value="PRESENT" {% if row.status == 'PRESENT' %}checked{% endif %} style="width:auto;margin-right:.3rem"> Present</label>
-              <label class="btn btn-sm"><input type="radio" name="status_{{ row.student.id }}" value="LATE" {% if row.status == 'LATE' %}checked{% endif %} style="width:auto;margin-right:.3rem"> Late</label>
-              <label class="btn btn-sm"><input type="radio" name="status_{{ row.student.id }}" value="ABSENT" {% if row.status == 'ABSENT' %}checked{% endif %} style="width:auto;margin-right:.3rem"> Absent</label>
+              <label class="btn btn-sm"><input type="radio" name="status_{{ row.student.id }}" value="PRESENT" {% if row.status == 'PRESENT' %}checked{% endif %}> Present</label>
+              <label class="btn btn-sm"><input type="radio" name="status_{{ row.student.id }}" value="LATE" {% if row.status == 'LATE' %}checked{% endif %}> Late</label>
+              <label class="btn btn-sm"><input type="radio" name="status_{{ row.student.id }}" value="ABSENT" {% if row.status == 'ABSENT' %}checked{% endif %}> Absent</label>
             </span>
           {% else %}
             <span class="badge {% if row.status == 'PRESENT' %}green{% elif row.status == 'LATE' %}amber{% elif row.status == 'ABSENT' %}red{% else %}gray{% endif %}">{{ row.status|default:'—' }}</span>
@@ -33,10 +33,10 @@
   </div>
 
   {% if session.status == 'LIVE' %}
-    <div class="btn-row" style="margin-top:1rem">
+    <div class="btn-row mt-md">
       <button class="btn btn-accent" type="submit">✅ Submit &amp; end session</button>
     </div>
-    <p class="small muted" style="margin-top:.4rem">Submitting attendance closes the session and records the end time.</p>
+    <p class="small muted mt-xs">Submitting attendance closes the session and records the end time.</p>
   {% endif %}
 </form>
 {% endblock %}

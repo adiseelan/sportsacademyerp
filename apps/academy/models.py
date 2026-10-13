@@ -2,6 +2,9 @@
 Organizational core: Academy (tenant) -> Branch -> Sport/Batch, plus the
 Manager<->Branch and Coach<->Batch assignment tables that drive scoping.
 """
+import os
+from uuid import uuid4
+
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
@@ -45,6 +48,12 @@ class Sport(models.Model):
         return self.name
 
 
+def branch_photo_upload(instance, filename):
+    """Random file name so uploads never collide or leak the original name."""
+    ext = os.path.splitext(filename)[1].lower() or ".jpg"
+    return f"branches/{uuid4().hex}{ext}"
+
+
 class Branch(models.Model):
     academy = models.ForeignKey(Academy, on_delete=models.CASCADE, related_name="branches")
     name = models.CharField(max_length=120)
@@ -56,6 +65,10 @@ class Branch(models.Model):
         default=200, help_text="Coach must be within this radius (metres) to check in."
     )
     phone = models.CharField(max_length=20, blank=True)
+    photo = models.ImageField(
+        upload_to=branch_photo_upload, blank=True,
+        help_text="Cover photo shown on the Branches page (JPG / PNG / WebP, up to 5 MB).",
+    )
     sports = models.ManyToManyField(Sport, related_name="branches", blank=True)
     managers = models.ManyToManyField(
         settings.AUTH_USER_MODEL,

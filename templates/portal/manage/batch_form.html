@@ -4,9 +4,9 @@
 {% block content %}
 <div class="page-head">
   <h1>{% if mode == 'edit' %}Edit batch{% else %}New batch{% endif %}</h1>
-  <a class="btn btn-ghost" href="{% url 'portal:batch_list' %}">← Back to batches</a>
+  <a class="btn btn-ghost" href="{{ back_url }}">← Back to {{ back_label }}</a>
 </div>
-<form method="post" class="card card-pad" style="max-width:640px">
+<form method="post" class="card card-pad narrow">
   {% csrf_token %}
   {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
   <div class="form-grid">
@@ -24,12 +24,12 @@
     {% include 'portal/manage/_field.html' with field=form.capacity %}
   </div>
   <label class="check-inline">{{ form.is_active }} <span>Active</span></label>
-  <div class="btn-row" style="margin-top:1rem">
+  <div class="btn-row mt-md">
     <button class="btn btn-primary" type="submit">Save batch</button>
-    <a class="btn btn-ghost" href="{% url 'portal:batch_list' %}">Cancel</a>
+    <a class="btn btn-ghost" href="{{ back_url }}">Cancel</a>
   </div>
 </form>
-<p class="small muted" style="max-width:640px;margin-top:.7rem">
+<p class="small muted narrow mt-sm">
   A batch is one sport at one branch (e.g. “Cricket · U-14 Evening”). Assign coaches from the Coaches page.
 </p>
 {% endblock %}

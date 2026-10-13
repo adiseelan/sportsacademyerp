@@ -7,12 +7,12 @@
 </div>
 
 {% if live %}
-  <div class="card card-pad" style="border-left:4px solid var(--accent);margin-bottom:1rem">
-    <div class="chip-row" style="justify-content:space-between">
+  <div class="card card-pad card-accent">
+    <div class="chip-row between">
       <span><span class="dot live"></span><b>Live now</b></span>
     </div>
     {% for s in live %}
-      <div class="chip-row" style="justify-content:space-between;margin-top:.5rem">
+      <div class="chip-row between mt-xs">
         <span>{{ s.batch }}</span>
         <a class="btn btn-sm btn-accent" href="{% url 'portal:coach_attendance' s.pk %}">Mark attendance →</a>
       </div>
@@ -23,13 +23,13 @@
 <div class="grid cols-2">
   {% for row in rows %}
     <div class="card card-pad">
-      <div class="chip-row" style="justify-content:space-between">
-        <h3 style="margin:0">{{ row.batch.sport.name }} · {{ row.batch.name }}</h3>
+      <div class="chip-row between">
+        <h3 class="m-0">{{ row.batch.sport.name }} · {{ row.batch.name }}</h3>
         {% if row.session.status == 'LIVE' %}<span class="badge green">Live</span>
         {% elif row.session.status == 'COMPLETED' %}<span class="badge gray">Done</span>
         {% else %}<span class="badge amber">Scheduled</span>{% endif %}
       </div>
-      <p class="small muted" style="margin:.35rem 0">📍 {{ row.batch.branch.name }} · 🕒 {{ row.batch.schedule_label }}</p>
+      <p class="small muted my-xs">📍 {{ row.batch.branch.name }} · 🕒 {{ row.batch.schedule_label }}</p>
       {% if row.session.status == 'LIVE' %}
         <a class="btn btn-accent btn-block" href="{% url 'portal:coach_attendance' row.session.pk %}">Mark attendance</a>
       {% elif row.session.status == 'COMPLETED' %}
@@ -39,7 +39,7 @@
       {% endif %}
     </div>
   {% empty %}
-    <div class="empty" style="grid-column:1/-1"><div class="empty-ico">🌤️</div><p>No sessions scheduled for today. Enjoy the break!</p></div>
+    <div class="empty span-all"><div class="empty-ico">🌤️</div><p>No sessions scheduled for today. Enjoy the break!</p></div>
   {% endfor %}
 </div>
 {% endblock %}

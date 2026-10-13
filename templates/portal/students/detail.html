@@ -19,7 +19,7 @@
   <div class="card">
     <div class="card-head"><h3>Enrollments</h3></div>
     <div class="card-body">
-      <div class="table-wrap"><table class="data" style="min-width:auto">
+      <div class="table-wrap"><table class="data data-fluid">
         <thead><tr><th>Sport</th><th>Batch</th><th>Branch</th><th>Status</th></tr></thead>
         <tbody>
         {% for e in enrollments %}
@@ -29,7 +29,7 @@
         </tbody>
       </table></div>
       {% if can_manage %}
-      <form method="post" action="{% url 'portal:student_enroll' student.pk %}" class="chip-row" style="margin-top:.8rem">
+      <form method="post" action="{% url 'portal:student_enroll' student.pk %}" class="chip-row mt-sm">
         {% csrf_token %}
         {{ enroll_form.batch }}
         <button class="btn btn-sm btn-primary" type="submit">Enroll</button>
@@ -42,7 +42,7 @@
     <div class="card-head"><h3>Guardians</h3></div>
     <div class="card-body">
       {% for g in guardians %}
-        <div class="chip-row" style="justify-content:space-between;padding:.35rem 0;border-bottom:1px solid var(--border)">
+        <div class="list-row">
           <span>{{ g.parent.full_name }} <span class="small muted">· {{ g.get_relationship_display }}{% if g.is_primary %} · primary{% endif %}</span></span>
           <span class="small muted">{{ g.parent.email }}</span>
         </div>
@@ -51,10 +51,10 @@
   </div>
 </div>
 
-<div class="card" style="margin-top:1rem">
+<div class="card">
   <div class="card-head"><h3>Fee plans</h3></div>
   <div class="card-body">
-    <div class="table-wrap"><table class="data" style="min-width:auto">
+    <div class="table-wrap"><table class="data data-fluid">
       <thead><tr><th>Sport</th><th>Plan</th><th>Type</th><th>Validity</th><th>Next due</th><th>Status</th></tr></thead>
       <tbody>
       {% for f in fees %}
@@ -66,18 +66,18 @@
       </tbody>
     </table></div>
     {% if can_manage %}
-    <form method="post" action="{% url 'portal:student_assign_fee' student.pk %}" class="form-grid" style="margin-top:.9rem;grid-template-columns:1fr 1fr 1fr auto;align-items:end">
+    <form method="post" action="{% url 'portal:student_assign_fee' student.pk %}" class="form-grid assign-fee">
       {% csrf_token %}
       <label class="field"><span class="field-label">Sport</span>{{ fee_form.sport }}</label>
       <label class="field"><span class="field-label">Plan</span>{{ fee_form.plan }}</label>
       <label class="field"><span class="field-label">Start</span>{{ fee_form.start_date }}</label>
-      <button class="btn btn-primary" type="submit" style="margin-bottom:.9rem">Assign fee</button>
+      <button class="btn btn-primary btn-field-align" type="submit">Assign fee</button>
     </form>
     {% endif %}
   </div>
 </div>
 
-<div class="card" style="margin-top:1rem">
+<div class="card">
   <div class="card-head"><h3>Invoices &amp; payments</h3></div>
   <div class="card-body">
     <div class="table-wrap"><table class="data">
@@ -96,7 +96,7 @@
   </div>
 </div>
 
-<div class="card" style="margin-top:1rem">
+<div class="card">
   <div class="card-head"><h3>Recent attendance</h3></div>
   <div class="card-body">
     <div class="chip-row">

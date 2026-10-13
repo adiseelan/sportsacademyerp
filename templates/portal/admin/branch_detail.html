@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}{{ selected.name }} · Branches{% endblock %}
+{% block topbar %}Branches{% endblock %}
+{% block content %}
+<a class="back-link" href="{% url 'portal:branches' %}">← All branches</a>
+
+<header class="detail-head">
+  {% if selected.photo %}<img class="detail-ico detail-photo" src="{{ selected.photo.url }}" alt="">{% else %}<span class="detail-ico" aria-hidden="true">🏢</span>{% endif %}
+  <div class="min-w-0">
+    <div class="detail-title">
+      <h1>{{ selected.name }}</h1>
+      {% if selected.is_active %}<span class="badge green">Active</span>{% else %}<span class="badge gray">Inactive</span>{% endif %}
+    </div>
+    <div class="detail-sub"><svg class="pin-ico" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 18s5.5-5.2 5.5-9.5a5.5 5.5 0 1 0-11 0C4.5 12.8 10 18 10 18z" fill="currentColor"></path><circle cx="10" cy="8.5" r="2" fill="#fff"></circle></svg>{{ selected.address|default:'No address on file' }}</div>
+  </div>
+  <details class="dropdown more-menu detail-menu">
+    <summary class="kebab-btn kebab-md" aria-label="More actions for {{ selected.name }}" title="More actions">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="4.5" r="1.7" fill="currentColor"></circle><circle cx="10" cy="10" r="1.7" fill="currentColor"></circle><circle cx="10" cy="15.5" r="1.7" fill="currentColor"></circle></svg>
+    </summary>
+    <div class="dropdown-panel menu-panel">
+      <a class="menu-item" href="{% url 'portal:branch_edit' selected.pk %}">
+        <span class="menu-ico">✏️</span><span>Edit branch<small>Details, photo &amp; sports</small></span>
+      </a>
+    </div>
+  </details>
+</header>
+
+<nav class="tabs" aria-label="Branch sections">
+  <a class="tab{% if tab == 'overview' %} is-active{% endif %}" href="{% url 'portal:branch_detail' selected.pk %}"{% if tab == 'overview' %} aria-current="page"{% endif %}>Overview</a>
+  <a class="tab{% if tab == 'batches' %} is-active{% endif %}" href="{% url 'portal:branch_detail' selected.pk %}?tab=batches"{% if tab == 'batches' %} aria-current="page"{% endif %}>Batches <span class="tab-count">{{ batches|length }}</span></a>
+  <a class="tab{% if tab == 'students' %} is-active{% endif %}" href="{% url 'portal:branch_detail' selected.pk %}?tab=students"{% if tab == 'students' %} aria-current="page"{% endif %}>Students <span class="tab-count">{{ students|length }}</span></a>
+  <a class="tab{% if tab == 'fees' %} is-active{% endif %}" href="{% url 'portal:branch_detail' selected.pk %}?tab=fees"{% if tab == 'fees' %} aria-current="page"{% endif %}>Fees</a>
+</nav>
+
+{% if tab == 'overview' %}
+  <div class="card">
+    <div class="card-head">
+      <h3 class="card-title"><span aria-hidden="true">🏢</span> Basic Information</h3>
+      {% if selected.is_active %}<span class="badge green">Active</span>{% else %}<span class="badge gray">Inactive</span>{% endif %}
+    </div>
+    <div class="card-body info-grid">
+      <dl class="info-col">
+        <dt>Branch Name</dt><dd>{{ selected.name }}</dd>
+        <dt>Address</dt><dd>{{ selected.address|default:'—' }}</dd>
+        <dt>Geo-fence</dt><dd>{% if selected.has_geo %}{{ selected.latitude|floatformat:4 }}, {{ selected.longitude|floatformat:4 }} · {{ selected.geofence_radius_m }} m{% else %}Not set{% endif %}</dd>
+        {% if selected.phone %}<dt>Phone</dt><dd>{{ selected.phone }}</dd>{% endif %}
+      </dl>
+      <dl class="info-col">
+        <dt>Status</dt><dd>{% if selected.is_active %}<span class="badge green">Active</span>{% else %}<span class="badge gray">Inactive</span>{% endif %}</dd>
+        {% if selected.code %}<dt>Code</dt><dd>{{ selected.code }}</dd>{% endif %}
+        <dt>Created On</dt><dd>{{ selected.created_at|date:'d M Y' }}</dd>
+        <dt>Last Updated</dt><dd>{{ last_updated|date:'d M Y' }}</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <h3 class="card-title"><span aria-hidden="true">⚽</span> Sports Offered</h3>
+      <a class="btn btn-sm" href="{% url 'portal:branch_edit' selected.pk %}#sports">＋ Add sport</a>
+    </div>
+    <div class="card-body">
+      <div class="chip-row chips-lg">
+        {% for s in selected.sports.all %}<span class="chip-lg">{{ s.name }}</span>{% empty %}<span class="muted small">No sports offered yet.</span>{% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <h3 class="card-title"><span aria-hidden="true">👥</span> Managers</h3>
+      <a class="btn btn-sm" href="{% url 'portal:manager_create' %}">＋ Add manager</a>
+    </div>
+    <div class="card-body">
+      {% for m in branch_managers %}
+        <div class="list-row">
+          <span class="person"><span class="avatar avatar-lg">{{ m.get_short_name|slice:':1'|upper }}</span>{{ m.get_short_name }}<span class="badge indigo">Manager</span></span>
+          <a class="small" href="{% url 'portal:manager_assign' m.pk %}">Change branches</a>
+        </div>
+      {% empty %}<p class="muted small m-0">No manager assigned to this branch.</p>{% endfor %}
+    </div>
+  </div>
+{% elif tab == 'batches' %}
+  <div class="card">
+    <div class="card-head">
+      <h3 class="card-title"><span aria-hidden="true">📋</span> Batches</h3>
+      <a class="btn btn-sm btn-primary" href="{% url 'portal:batch_create' %}?branch={{ selected.pk }}">＋ New batch</a>
+    </div>
+    <div class="card-body">
+      {% for bt in batches %}
+        <div class="list-row batch-row">
+          <div class="min-w-0">
+            <div class="batch-name"><b>{{ bt.name }}</b><span class="badge indigo">{{ bt.sport.name }}</span></div>
+            <div class="small muted">🕒 {{ bt.schedule_label }} · 🧑‍🏫 {% for c in bt.coaches.all %}{{ c.get_short_name }}{% if not forloop.last %}, {% endif %}{% empty %}No coach{% endfor %} · 👥 {{ bt.capacity }} seats</div>
+          </div>
+          <div class="row-end">
+            {% if bt.is_active %}<span class="badge green">Active</span>{% else %}<span class="badge gray">Inactive</span>{% endif %}
+            <a class="btn btn-sm" href="{% url 'portal:batch_edit' bt.pk %}">Edit</a>
+          </div>
+        </div>
+      {% endfor %}
+      {% if not batches %}<p class="muted small m-0">No batches at this branch yet.</p>{% endif %}
+    </div>
+  </div>
+{% elif tab == 'fees' %}
+  <div class="tab-toolbar">
+    <div>
+      <h3 class="m-0">Fees · {{ selected.name }}</h3>
+      <div class="small muted">Only this branch's invoices and payments.</div>
+    </div>
+    {% include "portal/admin/_period_dropdown.html" %}
+  </div>
+
+  <div class="grid cols-2 fee-tiles">
+    <div class="kpi accent">
+      <div class="kpi-label">Collected</div>
+      <div class="kpi-value">₹{{ summary.collected|floatformat:0|intcomma }}</div>
+      <div class="kpi-sub">received in {{ period.label }}</div>
+    </div>
+    <div class="kpi warn">
+      <div class="kpi-label">Outstanding</div>
+      <div class="kpi-value">₹{{ summary.outstanding|floatformat:0|intcomma }}</div>
+      <div class="kpi-sub">{{ summary.unpaid_count }} unpaid invoice{{ summary.unpaid_count|pluralize }} due by {{ period.end|date:'d M' }}</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head fee-head">
+      <h3 class="card-title"><span aria-hidden="true">🧾</span> Payments &amp; dues · {{ period.label }}</h3>
+      <nav class="seg" aria-label="Show">
+        {% for f in fee_filters %}<a class="seg-opt{% if f.value == show %} is-active{% endif %}" href="?{{ f.query }}"{% if f.value == show %} aria-current="true"{% endif %}>{{ f.label }}<span class="seg-count">{{ f.count }}</span></a>{% endfor %}
+      </nav>
+    </div>
+    <div class="card-body">
+      {% if fee_rows %}
+      <div class="table-wrap"><table class="data fee-table">
+        <thead><tr><th>Student</th><th>For</th><th>Date</th><th>Status</th><th class="right">Amount</th><th class="col-actions"><span class="sr-only">Actions</span></th></tr></thead>
+        <tbody>
+        {% for r in fee_rows %}{% with o=r.obj %}
+          <tr>
+            <td class="nowrap"><a href="{% url 'portal:student_detail' r.student.pk %}"><b>{{ r.student.full_name }}</b></a></td>
+            {% if r.paid %}
+            <td class="small nowrap">{% if o.invoice %}{{ o.invoice.sport.name }} · {{ o.invoice.period_label }}{% else %}—{% endif %}</td>
+            <td class="small nowrap">{{ r.date|date:'d M Y' }}</td>
+            <td><span class="badge green">Paid</span></td>
+            <td class="right"><span class="badge green">₹{{ r.amount|floatformat:0|intcomma }}</span></td>
+            <td class="right">{% if o.receipt_number %}<a class="btn btn-sm" href="{% url 'portal:receipt' o.pk %}" title="Receipt {{ o.receipt_number }}">Receipt</a>{% endif %}</td>
+            {% else %}
+            <td class="small nowrap">{{ o.sport.name }} · {{ o.period_label }}</td>
+            <td class="small nowrap"><span class="muted">Due</span> {{ r.date|date:'d M Y' }}</td>
+            <td>{% include 'portal/fees/_status_badge.html' with status=o.status label=o.get_status_display %}</td>
+            <td class="right"><span class="badge amber">₹{{ r.amount|floatformat:0|intcomma }}</span></td>
+            <td class="right"><a class="btn btn-sm" href="{% url 'portal:invoice_detail' o.pk %}" title="Invoice {{ o.number }}">Open</a></td>
+            {% endif %}
+          </tr>
+        {% endwith %}{% endfor %}
+        </tbody>
+        <tfoot>
+          {% if show != 'unpaid' %}<tr><td colspan="4"><b>Total collected</b></td><td class="right"><b class="text-green">₹{{ summary.collected|floatformat:0|intcomma }}</b></td><td></td></tr>{% endif %}
+          {% if show != 'paid' %}<tr><td colspan="4"><b>Total outstanding</b></td><td class="right"><b class="text-amber">₹{{ summary.outstanding|floatformat:0|intcomma }}</b></td><td></td></tr>{% endif %}
+        </tfoot>
+      </table></div>
+      {% elif show == 'paid' %}<p class="muted small m-0">No payments received at this branch in {{ period.label }}.</p>
+      {% elif show == 'unpaid' %}<p class="muted small m-0">Everyone at this branch has paid — nothing due by {{ period.end|date:'d M Y' }}.</p>
+      {% else %}<p class="muted small m-0">No payments or dues at this branch for {{ period.label }}.</p>{% endif %}
+    </div>
+  </div>
+{% else %}
+  <div class="card">
+    <div class="card-head">
+      <h3 class="card-title"><span aria-hidden="true">🧑‍🎓</span> Students</h3>
+      <a class="btn btn-sm btn-primary" href="{% url 'portal:student_create' %}">＋ Add student</a>
+    </div>
+    <div class="card-body">
+      {% for st in students %}
+        <div class="list-row batch-row">
+          <div class="min-w-0 person">
+            <span class="avatar avatar-lg">{{ st.full_name|slice:':1'|upper }}</span>
+            <div class="min-w-0">
+              <div class="batch-name"><b>{{ st.full_name }}</b>{% if st.age %}<span class="small muted">{{ st.age }} yrs</span>{% endif %}</div>
+              <div class="small muted">{% for e in st.branch_enrollments %}{{ e.sport.name }} · {{ e.batch.name }}{% if e.status == 'PAUSED' %} (paused){% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}</div>
+            </div>
+          </div>
+          <div class="row-end">
+            {% if st.status == 'ACTIVE' %}<span class="badge green">Active</span>{% elif st.status == 'WITHDRAWN' %}<span class="badge red">Withdrawn</span>{% else %}<span class="badge gray">{{ st.get_status_display }}</span>{% endif %}
+            <a class="btn btn-sm" href="{% url 'portal:student_detail' st.pk %}">Open</a>
+          </div>
+        </div>
+      {% empty %}<p class="muted small m-0">No students enrolled at this branch yet.</p>{% endfor %}
+    </div>
+  </div>
+{% endif %}
+{% endblock %}

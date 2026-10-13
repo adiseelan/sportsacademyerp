@@ -20,7 +20,7 @@
           <div class="alert alert-success"><span class="dot live"></span> Session live now — {{ s.batch.sport.name }} with {{ s.coach.get_short_name|default:'coach' }}.</div>
         {% endfor %}
       {% endif %}
-      <div class="table-wrap"><table class="data" style="min-width:auto">
+      <div class="table-wrap"><table class="data data-fluid">
         <thead><tr><th>Sport</th><th>Batch</th><th>Coach</th><th>Schedule</th></tr></thead>
         <tbody>
         {% for e in c.student.enrollments.all %}
@@ -30,14 +30,14 @@
         {% empty %}<tr><td colspan="4" class="muted small">Not enrolled yet.</td></tr>{% endfor %}
         </tbody>
       </table></div>
-      <div class="btn-row" style="margin-top:.8rem">
+      <div class="btn-row mt-sm">
         <a class="btn btn-sm" href="{% url 'portal:parent_attendance' c.student.pk %}">📅 Attendance</a>
         <a class="btn btn-sm" href="{% url 'portal:parent_fees' %}">💳 Fees</a>
       </div>
     </div>
   </div>
 {% empty %}
-  <div class="empty" style="grid-column:1/-1"><div class="empty-ico">👨‍👩‍👧</div><p>No children linked to your account yet. Please contact your academy.</p></div>
+  <div class="empty span-all"><div class="empty-ico">👨‍👩‍👧</div><p>No children linked to your account yet. Please contact your academy.</p></div>
 {% endfor %}
 </div>
 {% endblock %}

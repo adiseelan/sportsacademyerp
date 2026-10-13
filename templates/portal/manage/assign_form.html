@@ -6,14 +6,14 @@
   <h1>{{ assign_label }}</h1>
   <a class="btn btn-ghost" href="{% if field == 'batches' %}{% url 'portal:coaches' %}{% else %}{% url 'portal:managers' %}{% endif %}">← Back</a>
 </div>
-<form method="post" class="card card-pad" style="max-width:640px">
+<form method="post" class="card card-pad narrow">
   {% csrf_token %}
   <p class="muted">{{ person.full_name }} <span class="small">· {{ person.email }}</span></p>
   <div class="divider"></div>
   <div class="checks">
     {% if field == 'branches' %}{{ aform.branches }}{% else %}{{ aform.batches }}{% endif %}
   </div>
-  <div class="btn-row" style="margin-top:1rem">
+  <div class="btn-row mt-md">
     <button class="btn btn-primary" type="submit">Save assignments</button>
     <a class="btn btn-ghost" href="{% if field == 'batches' %}{% url 'portal:coaches' %}{% else %}{% url 'portal:managers' %}{% endif %}">Cancel</a>
   </div>

@@ -11,7 +11,7 @@
   {% include 'portal/fees/_status_badge.html' with status=invoice.status label=invoice.get_status_display %}
 </div>
 
-<div class="grid cols-4" style="margin-bottom:1rem">
+<div class="grid cols-4">
   <div class="kpi"><div class="kpi-label">Amount</div><div class="kpi-value">₹{{ invoice.amount|floatformat:0|intcomma }}</div></div>
   <div class="kpi"><div class="kpi-label">Discount</div><div class="kpi-value">₹{{ invoice.discount|floatformat:0|intcomma }}</div></div>
   <div class="kpi accent"><div class="kpi-label">Paid</div><div class="kpi-value">₹{{ invoice.amount_paid|floatformat:0|intcomma }}</div></div>
@@ -22,7 +22,7 @@
   <div class="card">
     <div class="card-head"><h3>Payment ledger</h3></div>
     <div class="card-body">
-      <div class="table-wrap"><table class="data" style="min-width:auto">
+      <div class="table-wrap"><table class="data data-fluid">
         <thead><tr><th>Date</th><th>Receipt</th><th>Method</th><th>Amount</th></tr></thead>
         <tbody>
         {% for p in payments %}

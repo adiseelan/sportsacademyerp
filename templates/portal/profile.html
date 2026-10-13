@@ -19,13 +19,13 @@
     <h3>Security</h3>
     <p class="small muted">Your account is protected by one-time email codes (OTP). There is no reusable
       password to steal or phish.</p>
-    <ul class="list-reset small" style="line-height:1.9">
+    <ul class="list-reset small list-loose">
       <li>✅ Passwordless OTP sign-in</li>
       <li>✅ Codes expire quickly &amp; are single-use</li>
       <li>✅ Rate-limited to 5 code requests, then a cooldown</li>
       <li>✅ Sessions time out after inactivity</li>
     </ul>
-    <form method="post" action="{% url 'accounts:logout' %}" style="margin-top:.6rem">{% csrf_token %}
+    <form method="post" action="{% url 'accounts:logout' %}" class="mt-sm">{% csrf_token %}
       <button class="btn btn-danger btn-sm" type="submit">Sign out of all this session</button></form>
   </div>
 </div>

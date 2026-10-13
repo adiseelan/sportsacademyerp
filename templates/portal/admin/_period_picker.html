@@ -1,0 +1,22 @@
+{% comment %}
+  Period picker + overflow menu for the admin dashboard header.
+  Pure HTML/CSS (<details> + radio tabs), so it works under the strict CSP without JS;
+  static/js/app.js only adds "close on outside click / Esc".
+{% endcomment %}
+<div class="page-actions">
+  {% include "portal/admin/_period_dropdown.html" %}
+
+  <details class="dropdown more-menu">
+    <summary class="kebab-btn" aria-label="More actions" title="More actions">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="4.5" r="1.7" fill="currentColor"></circle><circle cx="10" cy="10" r="1.7" fill="currentColor"></circle><circle cx="10" cy="15.5" r="1.7" fill="currentColor"></circle></svg>
+    </summary>
+    <div class="dropdown-panel menu-panel">
+      <a class="menu-item" href="{% url 'portal:export_revenue' %}?period={{ period.value }}">
+        <span class="menu-ico">⬇️</span><span>Revenue CSV<small>{{ period.label }}</small></span>
+      </a>
+      <a class="menu-item" href="{% url 'portal:reports' %}">
+        <span class="menu-ico">📄</span><span>Export reports<small>All CSV reports</small></span>
+      </a>
+    </div>
+  </details>
+</div>

@@ -2,6 +2,7 @@
 Django>=5.0,<5.2
 argon2-cffi>=23.1.0        # Argon2 password hashing (preferred hasher)
 python-dotenv>=1.0.0       # .env loading
+Pillow>=10.0               # branch cover photos (ImageField)
 
 # For a full production deploy (Postgres + gunicorn + WhiteNoise), also:
 #   pip install -r requirements-prod.txt

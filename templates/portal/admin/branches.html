@@ -2,36 +2,49 @@
 {% block title %}Branches{% endblock %}
 {% block topbar %}Branches{% endblock %}
 {% block content %}
-<div class="page-head">
-  <h1>Branches &amp; venues</h1>
-  <div class="btn-row">
-    <a class="btn btn-ghost" href="{% url 'portal:sport_create' %}">+ Sport</a>
-    <a class="btn btn-ghost" href="{% url 'portal:batch_list' %}">📋 Batches</a>
-    <a class="btn btn-primary" href="{% url 'portal:branch_create' %}">+ New branch</a>
-  </div>
-</div>
-<div class="grid cols-2">
-  {% for b in branches %}
-    <div class="card card-pad">
-      <div class="chip-row" style="justify-content:space-between">
-        <h3 style="margin:0">🏢 {{ b.name }}</h3>
-        {% if b.is_active %}<span class="badge green">Active</span>{% else %}<span class="badge gray">Inactive</span>{% endif %}
-      </div>
-      <p class="small muted" style="margin:.3rem 0">{{ b.address|default:'No address on file' }}</p>
-      <dl class="kv">
-        <dt>Geo-fence</dt><dd>{% if b.has_geo %}{{ b.latitude|floatformat:4 }}, {{ b.longitude|floatformat:4 }} · {{ b.geofence_radius_m }} m{% else %}Not set{% endif %}</dd>
-        <dt>Sports</dt><dd>{% for s in b.sports.all %}<span class="badge indigo">{{ s.name }}</span> {% empty %}—{% endfor %}</dd>
-        <dt>Managers</dt><dd>{% for m in b.managers.all %}{{ m.get_short_name }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}</dd>
-      </dl>
-      <div class="btn-row" style="margin-top:.6rem">
-        <a class="btn btn-sm" href="{% url 'portal:branch_edit' b.pk %}">Edit</a>
-      </div>
+<form method="get" class="list-toolbar grid-toolbar" role="search">
+  {% if status %}<input type="hidden" name="status" value="{{ status }}">{% endif %}
+  <label class="search-field">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"></circle><path d="M13 13l4 4"></path></svg>
+    <input type="search" name="q" value="{{ q }}" placeholder="Search…" aria-label="Search branches" autocomplete="off" data-filter-input>
+  </label>
+  <details class="dropdown filter-menu">
+    <summary class="tool-btn tool-btn-plain{% if status %} is-on{% endif %}" aria-label="Filter by status" title="Filter by status">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 5.5h11M3 10h8M3 14.5h5M15.5 11.5v6M12.5 14.5h6"></path></svg>
+    </summary>
+    <div class="dropdown-panel menu-panel">
+      <a class="menu-item{% if not status %} is-current{% endif %}" href="?{{ keep_q }}">All branches<small>{{ total }} in total</small></a>
+      <a class="menu-item{% if status == 'active' %} is-current{% endif %}" href="?{{ keep_q }}status=active">Active only</a>
+      <a class="menu-item{% if status == 'inactive' %} is-current{% endif %}" href="?{{ keep_q }}status=inactive">Inactive only</a>
     </div>
+  </details>
+  <a class="btn btn-primary" href="{% url 'portal:branch_create' %}">＋ New branch</a>
+</form>
+
+<div class="branch-grid" data-filter-list>
+  {% for b in branches %}
+    <a class="branch-card" href="{% url 'portal:branch_detail' b.pk %}" data-filter-text="{{ b.name }} {{ b.address }} {{ b.code }}">
+      {% if b.photo %}
+        <img class="branch-cover" src="{{ b.photo.url }}" alt="{{ b.name }}" loading="lazy">
+      {% else %}
+        <span class="branch-cover cover cover-{{ b.cover_variant }}" aria-hidden="true"><span class="cover-icons">{% for e in b.cover_emojis %}<span>{{ e }}</span>{% endfor %}</span></span>
+      {% endif %}
+      <span class="branch-card-body">
+        <span class="branch-card-title">
+          <span class="branch-card-ico" aria-hidden="true">🏢</span>
+          <b>{{ b.name }}</b>
+          {% if b.is_active %}<span class="badge green">Active</span>{% else %}<span class="badge gray">Inactive</span>{% endif %}
+        </span>
+        <span class="branch-card-addr"><svg class="pin-ico" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 18s5.5-5.2 5.5-9.5a5.5 5.5 0 1 0-11 0C4.5 12.8 10 18 10 18z" fill="currentColor"></path><circle cx="10" cy="8.5" r="2" fill="#fff"></circle></svg>{{ b.address|default:'No address on file' }}</span>
+      </span>
+    </a>
   {% empty %}
-    <div class="empty" style="grid-column:1/-1"><div class="empty-ico">🏢</div>
-      <p>No branches yet.</p>
-      <a class="btn btn-primary" href="{% url 'portal:branch_create' %}">+ Create your first branch</a>
+    <div class="empty span-all">
+      <div class="empty-ico">🏢</div>
+      {% if q or status %}<p>No branches match.</p><a class="btn btn-sm" href="{% url 'portal:branches' %}">Clear filters</a>
+      {% else %}<p>No branches yet.</p><a class="btn btn-primary btn-sm" href="{% url 'portal:branch_create' %}">＋ Create your first branch</a>{% endif %}
     </div>
   {% endfor %}
+  <p class="muted small filter-empty span-all" hidden>No branches match “<span data-filter-echo></span>”.</p>
 </div>
 {% endblock %}

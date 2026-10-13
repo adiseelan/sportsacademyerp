@@ -9,7 +9,7 @@ from apps.academy.scoping import batch_ids_for
 from apps.accounts.permissions import staff_scope
 from apps.attendance.models import Attendance, Session
 from apps.fees.models import InvoiceStatus
-from apps.portal import analytics
+from apps.portal import analytics, periods
 
 
 def _csv_response(name, header, rows):
@@ -32,6 +32,13 @@ def export_revenue(request):
     payments = analytics.scoped_payments(request.user).select_related(
         "student", "invoice", "invoice__sport", "invoice__branch"
     )
+    name = "revenue"
+    if request.GET.get("period"):  # ?period=2026-10 | 2026 (from the dashboard menu)
+        period = periods.parse_period(request.GET["period"], timezone.localdate())
+        payments = payments.filter(
+            recorded_at__date__gte=period.start, recorded_at__date__lte=period.end
+        )
+        name = f"revenue_{period.value}"
     rows = [
         [
             timezone.localtime(p.recorded_at).strftime("%Y-%m-%d %H:%M"),
@@ -46,7 +53,7 @@ def export_revenue(request):
         for p in payments
     ]
     return _csv_response(
-        "revenue",
+        name,
         ["Date", "Receipt", "Student", "Sport", "Branch", "Method", "Kind", "Amount"],
         rows,
     )

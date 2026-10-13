@@ -6,7 +6,7 @@
 <div class="page-head"><h1>Fee status</h1>
   <a class="btn btn-ghost" href="{% url 'portal:export_outstanding' %}">⬇ Export CSV</a></div>
 
-<div class="chip-row" style="margin-bottom:1rem">
+<div class="chip-row">
   <a class="btn btn-sm {% if not status %}btn-primary{% endif %}" href="{% url 'portal:fee_status' %}">Unpaid</a>
   <a class="btn btn-sm {% if status == 'OVERDUE' %}btn-primary{% endif %}" href="?status=OVERDUE">Overdue</a>
   <a class="btn btn-sm {% if status == 'PARTIAL' %}btn-primary{% endif %}" href="?status=PARTIAL">Partial</a>

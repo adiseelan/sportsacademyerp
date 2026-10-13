@@ -6,22 +6,22 @@
 <div class="page-head no-print">
   <h1>Receipt</h1>
   <div class="btn-row">
-    <button class="btn" onclick="window.print()" type="button">🖨️ Print / Save PDF</button>
+    <button class="btn" data-print type="button">🖨️ Print / Save PDF</button>
     {% if invoice %}<a class="btn btn-ghost" href="{% url 'portal:invoice_detail' invoice.pk %}">← Invoice</a>{% endif %}
   </div>
 </div>
 
-<div class="card card-pad" style="max-width:620px;margin:0 auto">
-  <div class="chip-row" style="justify-content:space-between;align-items:flex-start">
+<div class="card card-pad narrow mx-auto">
+  <div class="chip-row between items-start">
     <div>
-      <div style="font-size:1.6rem">🏆</div>
-      <h2 style="margin:.2rem 0">{{ p.academy.name }}</h2>
-      <p class="small muted" style="margin:0">Official payment receipt</p>
+      <div class="emoji-lg">🏆</div>
+      <h2 class="my-xs">{{ p.academy.name }}</h2>
+      <p class="small muted m-0">Official payment receipt</p>
     </div>
     <div class="right">
       <div class="badge green">PAID</div>
-      <p class="small muted" style="margin:.3rem 0 0">{{ p.receipt_number }}</p>
-      <p class="small muted" style="margin:0">{{ p.recorded_at|date:'d M Y, H:i' }}</p>
+      <p class="small muted m-0 mt-xs">{{ p.receipt_number }}</p>
+      <p class="small muted m-0">{{ p.recorded_at|date:'d M Y, H:i' }}</p>
     </div>
   </div>
 
@@ -34,12 +34,12 @@
   </dl>
 
   <div class="divider"></div>
-  <div class="chip-row" style="justify-content:space-between">
-    <h3 style="margin:0">Amount paid</h3>
-    <h2 style="margin:0">₹{{ p.amount|floatformat:2|intcomma }}</h2>
+  <div class="chip-row between">
+    <h3 class="m-0">Amount paid</h3>
+    <h2 class="m-0">₹{{ p.amount|floatformat:2|intcomma }}</h2>
   </div>
   {% if invoice %}
-  <p class="small muted right" style="margin-top:.3rem">Invoice balance now: ₹{{ invoice.balance|floatformat:2|intcomma }}</p>
+  <p class="small muted right mt-xs">Invoice balance now: ₹{{ invoice.balance|floatformat:2|intcomma }}</p>
   {% endif %}
 
   <div class="divider"></div>

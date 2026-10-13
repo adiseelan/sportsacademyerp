@@ -81,6 +81,46 @@ def revenue_summary(user, date_from=None, date_to=None, branch=None, sport=None)
     }
 
 
+def period_payments(user, start, end, branch=None):
+    """Successful payments recorded between start and end (the "Collected" rows)."""
+    payments = scoped_payments(user).filter(recorded_at__date__gte=start, recorded_at__date__lte=end)
+    if branch is not None:
+        payments = payments.filter(invoice__branch=branch)
+    return payments
+
+
+def period_unsettled(user, end, branch=None):
+    """Invoices due on or before `end` that still have a balance (the "Outstanding" rows,
+    arrears from earlier periods included)."""
+    invoices = scoped_invoices(user).filter(status__in=UNSETTLED, due_date__lte=end)
+    if branch is not None:
+        invoices = invoices.filter(branch=branch)
+    return invoices
+
+
+def period_summary(user, start, end, branch=None):
+    """Headline numbers for one reporting period (admin dashboard; a branch's Fees tab
+    when `branch` is given). Built from period_payments / period_unsettled, so the
+    totals always match the lists shown under them."""
+    collected = period_payments(user, start, end, branch).aggregate(s=Sum("amount"))["s"] or ZERO
+    unsettled = period_unsettled(user, end, branch)
+    outstanding = sum((inv.balance for inv in unsettled), ZERO)
+    return {
+        "collected": collected,
+        "outstanding": outstanding,
+        "unpaid_count": unsettled.count(),
+    }
+
+
+def first_payment_date(user, branch=None):
+    """Date of the first successful payment in scope (where the period picker starts)."""
+    payments = scoped_payments(user)
+    if branch is not None:
+        payments = payments.filter(invoice__branch=branch)
+    first = payments.order_by("recorded_at").values_list("recorded_at", flat=True).first()
+    return timezone.localtime(first).date() if first else None
+
+
 def revenue_by(user, dimension, date_from=None, date_to=None):
     """dimension: 'branch' or 'sport'. Returns list of (name, total)."""
     payments = scoped_payments(user)
@@ -97,12 +137,13 @@ def revenue_by(user, dimension, date_from=None, date_to=None):
     return [(r[field] or "—", r["total"] or ZERO) for r in rows]
 
 
-def revenue_trend(user, months=6):
-    """Last N calendar months of collected revenue."""
+def revenue_trend(user, months=6, end=None):
+    """N calendar months of collected revenue, ending with the month of `end`
+    (default: the current month)."""
     payments = scoped_payments(user)
-    today = timezone.localdate()
+    end = end or timezone.localdate()
     out = []
-    year, month = today.year, today.month
+    year, month = end.year, end.month
     buckets = []
     for _ in range(months):
         buckets.append((year, month))
